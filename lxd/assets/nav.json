@@ -1,0 +1,175 @@
+{
+  "data": [
+    {
+      "code": "DAS000000",
+      "name": "主页",
+      "icon": "&#xe606;",
+      "link": "/"
+    },
+    {
+      "code": "DAS101000",
+      "name": "新闻管理",
+      "icon": "&#xe61a;",
+      "child": [
+        {
+          "code": "DAS101100",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS101200",
+          "name": "新闻列表",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS101300",
+          "name": "评论管理",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS102000",
+      "name": "专题管理",
+      "icon": "&#xe60d;",
+      "target": "content",
+      "link": "/"
+    },
+    {
+      "code": "DAS103000",
+      "name": "杂志管理",
+      "icon": "&#xe60e;",
+      "child": [
+        {
+          "code": "DAS103001",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS103018",
+          "name": "杂志列表",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS104000",
+      "name": "随手拍管理",
+      "icon": "&#xe627;",
+      "child": [
+        {
+          "code": "DAS104001",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS104002",
+          "name": "随手拍列表",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS104003",
+          "name": "评论管理",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS105000",
+      "name": "知识库",
+      "icon": "&#xe69f;",
+      "child": [
+        {
+          "code": "DAS105100",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS105200",
+          "name": "知识库列表",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS106000",
+      "name": "专家库",
+      "icon": "&#xe679;",
+      "child": [
+        {
+          "code": "DAS106100",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS106200",
+          "name": "专家列表",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS107000",
+      "name": "大讲堂",
+      "icon": "&#xe60c;",
+      "child": [
+        {
+          "code": "DAS107100",
+          "name": "分类管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS107200",
+          "name": "大讲堂列表",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    },
+    {
+      "code": "DAS110000",
+      "name": "版本管理",
+      "icon": "&#xe632;",
+      "target": "content",
+      "link": "/"
+    },
+    {
+      "code": "DAS109000",
+      "name": "用户管理",
+      "icon": "&#xe610;",
+      "child": [
+        {
+          "code": "DAS109100",
+          "name": "角色管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS109200",
+          "name": "功能点管理",
+          "target": "content",
+          "link": "/"
+        },
+        {
+          "code": "DAS109300",
+          "name": "用户管理",
+          "target": "content",
+          "link": "/"
+        }
+      ]
+    }
+  ]
+}

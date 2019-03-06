@@ -1,10 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>front-end框架</title>
+    <link rel="stylesheet" href="component/thirdParty/iconfont/iconfont.css">
+    <link rel="stylesheet" href="component/menu/main.css">
+    <link rel="stylesheet" href="css/public.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="component/menu/main.css">
+    <link rel="stylesheet" href="component/button/button.css"/>
 </head>
-<body>
-
+<body class="clearFix">
+<header>
+    <div class="logo"><span></span>安全生产管理</div>
+    <div class="user">
+        <button class="userName" onclick="userInfo_click()">
+            <i class="iconfont">&#xe605;</i>用户001
+        </button>
+        <button class="signOut" onclick="close_click();">
+            <i class="iconfont">&#xe659;</i>安全退出
+        </button>
+    </div>
+</header>
+<div class="content">
+    <aside>
+        <nav id="mainMenu" class="mainMenu">
+            <ul></ul>
+        </nav>
+    </aside>
+    <main>
+        <div class="tabList">
+            <ul>
+                <!--<li><a href="#" class="tabListItem active" target="content">主页</a></li>-->
+            </ul>
+        </div>
+        <div class="tabContentList">
+            <iframe frameborder="0" name="content" class="active"></iframe>
+        </div>
+    </main>
+</div>
+<script src="./component/menu/menu.js"></script>
 </body>
 </html>

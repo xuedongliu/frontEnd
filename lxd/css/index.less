@@ -1,0 +1,114 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  min-width: 1366px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+header{
+  height: 45px;
+  background-color: #202020;
+  width: 100%;
+  line-height: 45px;
+  display: flex;
+  justify-content: space-between;
+  color: #ffffff;
+  button {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+  }
+  .logo{
+    font-weight: bold;
+    font-size: 21px;
+    margin-left: 30px;
+  }
+  .user{
+    margin-right: 30px;
+  }
+}
+.content{
+  flex: 1 1;
+  display: flex;
+  aside{
+    flex: 0 238px;
+    background-color: #002042;
+  }
+  main{
+    flex: 1 auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    .tabList{
+      //height: 34px;
+      flex: 0 34px;
+      border-bottom: 3px solid #0e9fac;
+      ul{
+        display: flex;
+      }
+      li{
+        position: relative;
+        line-height: 0;
+        &:not(:last-child){
+          margin-right: 10px;
+        }
+        &>i.iconfont{
+          display: inline !important;
+        }
+      }
+      i{
+        position: absolute;
+        right: 3px;
+        color: #fff;
+        font-size: 10px;
+        top: 10px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        margin: 0;
+        transform: scale(0.7);
+      }
+      i.iconfont{
+        display: none !important;
+      }
+    }
+    .tabListItem{
+      line-height: 34px;
+      height: 34px;
+      color: #ffffff;
+      display: inline-block;
+      border-radius: 3px 3px 0 0;
+      padding: 0 15px;
+      background-color: darkgray;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      overflow: hidden;
+      &:hover{
+        color: #ffffff;
+      }
+    }
+    .tabListItem.active{
+      background-color: #0e9fac;
+    }
+    .tabContentList{
+      flex: 1 auto;
+      overflow: auto;
+      display: flex;
+    }
+    iframe{
+      display: none;
+      flex: 1;
+      &.active{
+        display: block;
+      }
+    }
+
+  }
+}
