@@ -1,0 +1,42 @@
+@import url('../button/button.css');
+.search{
+  background-color:  rgba(46, 156, 213, 0.08);
+  border: 1px solid #D1D2D2;
+  display: flex;
+  justify-content: space-between;
+  height: 68px;
+  align-items: center;
+  .searchItemList {
+    padding-left: 15px;
+    max-height: 100%;
+    overflow: auto;
+    .item {
+      &:not(:last-child) {
+        margin-right: 25px;
+      }
+    }
+
+    .label {
+      margin-right: 10px;
+
+      & + * {
+        vertical-align: middle;
+        height: 22px;
+        border: 1px solid #aaaaab;
+        border-radius: 1px;
+        background-color: #ffffff;
+      }
+    }
+
+    input {
+      width: 204px;
+    }
+
+    select {
+      width: 158px;
+    }
+  }
+  .button{
+    margin-right: 16px;
+  }
+}

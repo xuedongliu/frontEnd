@@ -1,0 +1,1 @@
+.checkbox{width:14px;height:14px;display:flex;border:1px solid #cecfcf}.checkbox input[type=checkbox]{display:none}.checkbox label{flex:1}.react input[type=checkbox]:checked+label{background:linear-gradient(45deg,rgba(24,197,214,.6) 0,rgba(155,255,182,0) 100%)}/*# sourceMappingURL=checkbox.css.map */
