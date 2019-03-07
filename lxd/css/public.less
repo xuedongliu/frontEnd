@@ -1,6 +1,4 @@
-@baseFontSize:16px;
-@baseLineHeight:1.5;
-@color:#000;
+@import "../assets/_defaultSetting";
 html,body,header,main,aside,div,p,h1,h2,h3,h4,h5,h6,ul,li,input,button,select,option,textarea{
   margin: 0;
   padding: 0;
@@ -20,8 +18,10 @@ html,body{
   height: 100%;
 }
 body{
-  font-family: "Microsoft YaHei",sans-serif;
-  font-size: 16px;
+  font-family: @baseFontFamily,@baseFontFamilyBackUp;
+  font-size: @baseFontSize;
+  line-height: @baseLineHeight;
+  color: @baseColor;
 }
 .clearFix::before,
 .clearFix::after{
@@ -32,16 +32,6 @@ body{
 .iconfont{
   vertical-align: middle;
   margin: 0 10px;
-}
-.window{
-  width: 100%;
-  height: 100%;
-  background-color: rgba(46, 153, 210, 0.08);
-  border: 1px solid #cecfcf;
-  box-sizing: border-box;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 ::-webkit-scrollbar {
   width: 8px;

@@ -1,28 +1,23 @@
-
+@import "../../assets/_defaultSetting";
+@color:#fff;
+@topMenuFontSize: 16px;
+@topMenuLineHeight: 40px;
+@backgroundColor: #002042;
 .mainMenu {
-  color: #ffffff;
+  color: @color;
   height: 100%;
   overflow: auto;
-
-  .title {
-    height: 50px;
-    line-height: 50px;
-    font-size: 20px;
-    text-align: center;
-  }
-
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-
+  background-color: @backgroundColor;
   li {
     display: block;
-    line-height: 40px;
+    line-height: @topMenuLineHeight;
     overflow: hidden;
-    font-size: 16px;
+    font-size: @topMenuFontSize;
   }
-
   a {
     display: block;
     width: 100%;
@@ -33,7 +28,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    background-color: #002042;
+    background-color: @backgroundColor;
   }
 
   i {

@@ -1,9 +1,12 @@
 const tabListItem = $$('.tabList ul');
 const tabContentList = $$('.tabContentList');
+const menu = $$('#mainMenu ul');
 const frames = {
   content: window.frames['content'],
   active: window.frames['content']
 };
+const delayDown = 10;
+const delayUp = 500;
 
 fetch('assets/nav.json').then(res => res.json()).then(res => {
   gMenu(res.data);
@@ -34,19 +37,33 @@ function create(e, ele) {
   return element;
 }
 
+/**
+ * 给元素设置属性。
+ * @param {Element} ele 设置属性的元素
+ * @param {Object} option 需要设置的属性对象
+ */
+function setProperty(ele, option) {
+  for (let key in option) {
+    if (option.hasOwnProperty(key)) {
+      ele[key] = option[key];
+    }
+  }
+}
+
 function addTab(link) {
-  let activeTab = $$('.active', tabListItem);
-  let menu = $$('#mainMenu ul');
-  if (activeTab) {
-    activeTab.classList.remove('active');
+  let tabListItemActive = $$('.active', tabListItem);
+  if (tabListItemActive) {
+    tabListItemActive.classList.remove('active');
   }
   let newActiveTab = create('li', tabListItem);
   let activeTabLink = create('a', newActiveTab);
   let closeBtn = create('i', newActiveTab);
   closeBtn.classList.add('iconfont');
-  closeBtn.innerHTML = '&#xe63c;';
-  closeBtn.target = link.target;
-  closeBtn.$ = newActiveTab;
+  setProperty(closeBtn, {
+    innerHTML: '&#xe63c;',
+    target: link.target,
+    $: newActiveTab
+  });
   closeBtn.addEventListener('click', function (e) {
     e.stopPropagation();
     let $this = this;
@@ -56,11 +73,12 @@ function addTab(link) {
     tabListItem.removeChild($this.$);
   });
   activeTabLink.classList.add('tabListItem', 'active');
-  activeTabLink.innerHTML = link.innerHTML;
-  activeTabLink.target = link.target;
+  setProperty(activeTabLink, {
+    innerHTML: link.innerHTML,
+    target: link.target
+  });
   activeTabLink.addEventListener('click', function () {
     let activeTab = tabListItem.querySelector('.active');
-
     let active = menu.querySelector('.active');
     if (activeTab) {
       activeTab.classList.remove('active');
@@ -79,48 +97,43 @@ function addTab(link) {
  * @param { Array } menuList
  */
 function gMenu(menuList) {
-  let menu = document.querySelector('#mainMenu ul');
   menu.innerHTML = '';
   for (let i = 0; i < menuList.length; i++) {
     let item = menuList[i];
-    let li = document.createElement('li');
-    menu.appendChild(li);
-    li.classList.add('cui-role');
+    let li = create('li',menu);
     li.setAttribute('data-func-code', item.code);
-    let icon = document.createElement('i');
-    icon.className = 'iconfont';
-    icon.innerHTML = item.icon;
-    let Tlink = document.createElement('a');
-    if (item.child) {
-      li.classList.add('hasChild');
-      li.classList.add('closeChild');
-      let childList = document.createElement('ul');
+    let icon = create('i');
+    setProperty(icon,{
+      className: 'iconfont',
+      innerHTML: item.icon
+    });
+    let topMenu = create('a');
+    if (item.hasOwnProperty('child')) {
+      li.classList.add('hasChild','closeChild');
+      let span = create('span',li);
+      let childList = create('ul',li);
       childList.classList.add('childList');
-      let span = document.createElement('span');
       span.childList = childList;
-      Tlink.href = 'javascript:void(0);';
-      Tlink.appendChild(icon);
-      Tlink.appendChild(document.createTextNode(item.name));
-      let iconArrow = document.createElement('i');
+      topMenu.classList.add('noHref');
+      topMenu.appendChild(icon);
+      topMenu.appendChild(document.createTextNode(item.name));
+      let iconArrow = create('i',span);
       iconArrow.classList.add('iconfont', 'arrow');
       iconArrow.innerHTML = '&#xe658;';
-      span.appendChild(Tlink);
-      span.appendChild(iconArrow);
-      li.appendChild(span);
+      span.appendChild(topMenu);
       for (let j = 0; j < item.child.length; j++) {
         let childItem = item.child[j];
-        let childLi = document.createElement('li');
-        childLi.classList.add('cui-role');
+        let childLi = create('li',childList);
         childLi.setAttribute('data-func-code', childItem.code);
-        let link = document.createElement('a');
+        let link = create('a',childLi);
         link.appendChild(document.createTextNode(childItem.name));
-        link['data-href'] = childItem.link;
-        link.target = childItem.code;
-        childLi.appendChild(link);
-        childList.appendChild(childLi);
+        setProperty(link,{
+          'data-href': childItem.link,
+          target: childItem.code
+        });
         link.addEventListener('click', function () {
           // editTitle(this.innerHTML);
-          let ac = menu.querySelector('.active');
+          let ac = $$('.active',menu);
           if (ac) {
             ac.classList.remove('active');
           }
@@ -129,13 +142,12 @@ function gMenu(menuList) {
           return false;
         });
       }
-      li.appendChild(childList);
       childList.style.marginTop = '-' + childList.clientHeight + 'px';
       childList.style.display = 'none';
       span.addEventListener('click', function () {
         let toggledItem = this.childList;
         this.classList.toggle('openItem');
-        let block = this.querySelector('a[href]');
+        let block = $$('a.noHref',this);
         block.onclick = function (e) {
           e.stopPropagation();
           return false;
@@ -146,7 +158,7 @@ function gMenu(menuList) {
           setTimeout(function () {
             toggledItem.style.marginTop = '0';
             block.onclick = null;
-          }, 10);
+          }, delayDown);
 
         } else {
           toggledItem.style.marginTop = '-' + toggledItem.clientHeight + 'px';
@@ -154,18 +166,18 @@ function gMenu(menuList) {
           setTimeout(function () {
             block.onclick = null;
             toggledItem.style.display = 'none';
-          }, 500);
+          }, delayUp);
         }
 
       });
     } else {
       li.classList.add('noChild');
-      Tlink.appendChild(icon);
-      Tlink.appendChild(document.createTextNode(item.name));
-      Tlink['data-href'] = item.link;
-      Tlink.target = item.code;
-      Tlink.addEventListener('click', function () {
-        let ac = menu.querySelector('.active');
+      topMenu.appendChild(icon);
+      topMenu.appendChild(document.createTextNode(item.name));
+      topMenu['data-href'] = item.link;
+      topMenu.target = item.code;
+      topMenu.addEventListener('click', function () {
+        let ac = $$('.active',menu);
         if (ac) {
           ac.classList.remove('active');
         }
@@ -173,34 +185,32 @@ function gMenu(menuList) {
         addIframe(this);
         return false;
       });
-      li.appendChild(Tlink);
-
+      li.appendChild(topMenu);
     }
   }
 }
 
 function addIframe(link) {
   let target = link.target;
-  let activeTab = tabContentList.querySelector('.active');
+  let activeTab = $$('.active',tabContentList);
   if (frames[target]) {
     if (activeTab) {
       activeTab.classList.remove('active');
     }
     frames[target].classList.add('active');
-    tabListItem.querySelector('.active').classList.remove('active');
-    tabListItem.querySelector('a[target=' + target + ']').classList.add('active');
+    $$('.active',tabListItem).classList.remove('active');
+    $$('a[target=' + target + ']',tabListItem).classList.add('active');
   } else {
     addTab(link);
     let src = link['data-href'];
     if (activeTab) {
       activeTab.classList.remove('active');
     }
-    let iframe = document.createElement('iframe');
+    let iframe = create('iframe',tabContentList);
     iframe.name = target;
     iframe.src = src;
     iframe.setAttribute('frameborder', 0);
     iframe.classList.add('active');
     frames[target] = iframe;
-    tabContentList.appendChild(iframe);
   }
 }
