@@ -9,7 +9,7 @@ const delayDown = 10;
 const delayUp = 500;
 
 fetch('assets/nav.json').then(res => res.json()).then(res => {
-  gMenu(res.data);
+  gMenu(res.data,addIframe);
 });
 
 /**
@@ -60,7 +60,7 @@ function addTab(link) {
   let closeBtn = create('i', newActiveTab);
   closeBtn.classList.add('iconfont');
   setProperty(closeBtn, {
-    innerHTML: '&#xe63c;',
+    innerHTML: '<a>&#xe63c;</a>',
     target: link.target,
     $: newActiveTab
   });
@@ -68,7 +68,7 @@ function addTab(link) {
     e.stopPropagation();
     let $this = this;
     tabContentList.removeChild(frames[$this.target]);
-    menu.querySelector('a[target=' + $this.target + ']').classList.remove('active');
+    $$('a[target=' + $this.target + ']',menu).classList.remove('active');
     delete frames[$this.target];
     tabListItem.removeChild($this.$);
   });
@@ -78,8 +78,8 @@ function addTab(link) {
     target: link.target
   });
   activeTabLink.addEventListener('click', function () {
-    let activeTab = tabListItem.querySelector('.active');
-    let active = menu.querySelector('.active');
+    let activeTab = $$('.active',tabListItem);
+    let active = $$('.active',menu);
     if (activeTab) {
       activeTab.classList.remove('active');
     }
@@ -87,7 +87,7 @@ function addTab(link) {
     if (active) {
       active.classList.remove('active');
     }
-    menu.querySelector('a[target=' + this.target + ']').classList.add('active');
+    $$('a[target=' + this.target + ']',menu).classList.add('active');
     addIframe(this);
   });
 }
@@ -95,8 +95,9 @@ function addTab(link) {
 /**
  *
  * @param { Array } menuList
+ * @param { function } callback
  */
-function gMenu(menuList) {
+function gMenu(menuList,callback) {
   menu.innerHTML = '';
   for (let i = 0; i < menuList.length; i++) {
     let item = menuList[i];
@@ -138,7 +139,7 @@ function gMenu(menuList) {
             ac.classList.remove('active');
           }
           this.classList.add('active');
-          addIframe(this);
+          callback(this);
           return false;
         });
       }
@@ -182,7 +183,7 @@ function gMenu(menuList) {
           ac.classList.remove('active');
         }
         this.classList.add('active');
-        addIframe(this);
+        callback(this);
         return false;
       });
       li.appendChild(topMenu);
