@@ -21,6 +21,11 @@
           "code": "D002_2",
           "name": "switch",
           "link": "/component/switch/switch.html"
+        },
+        {
+          "code": "D002_3",
+          "name": "select",
+          "link": "/component/select/select.html"
         }
       ]
     }
