@@ -1,0 +1,69 @@
+.inputContainer {
+  position: relative;
+  font-size: 16px;
+  width: 200px;
+  height: max-content;
+}
+.inputContainer input {
+  border: 0;
+  width: 0;
+  height: 0;
+  outline: none;
+  line-height: 16px;
+  transition: all 0.5s;
+  box-sizing: content-box;
+  background-color: #a8a8a8;
+  color: #fff;
+}
+.inputContainer .inputContent {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: all 0.5s;
+  color: #696969;
+}
+.inputContainer input:focus {
+  width: 100%;
+  height: 16px;
+  padding: 8px;
+  line-height: 100%;
+}
+.inputContainer input:focus + .inputLabel .inputContent {
+  font-size: 8px;
+  color: #cbc4c6;
+}
+.inputContainer.down {
+  display: flex;
+  flex-direction: column;
+}
+.inputContainer.left {
+  display: flex;
+  flex-direction: row;
+}
+.inputContainer.left .inputLabel {
+  order: 1;
+}
+.inputContainer.left .inputText {
+  order: 2;
+  height: 16px;
+  padding: 8px 0;
+}
+.inputContainer.left .inputText:focus {
+  padding: 8px;
+}
+.inputContainer.right {
+  display: flex;
+}
+.inputContainer.right .inputText {
+  height: 16px;
+  padding: 8px 0;
+}
+.inputContainer.right .inputText:focus {
+  padding: 8px;
+}
+.inputContainer.top {
+  display: flex;
+  flex-direction: column-reverse;
+}
+/*# sourceMappingURL=input_text.css.map */

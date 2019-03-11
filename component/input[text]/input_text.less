@@ -1,0 +1,79 @@
+@import "../../assets/_defaultSetting";
+
+@fontSize: @baseFontSize;
+@backgroundColor:rgb(168,168,168);
+@color:#fff;
+@placeholderDaf:#696969;
+@placeholderAct:#cbc4c6;
+@width: 200px;
+@placeholderActFont:8px;
+.inputContainer {
+  position: relative;
+  font-size: @fontSize;
+  width: @width;
+  height: max-content;
+  input {
+    border: 0;
+    width: 0;
+    height: 0;
+    outline: none;
+    line-height: @fontSize;
+    transition: all 0.5s;
+    box-sizing: content-box;
+    background-color: @backgroundColor;
+    color: @color;
+  }
+  .inputContent {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: all 0.5s;
+    color: @placeholderDaf;
+  }
+  input:focus {
+    width: 100%;
+    height: @fontSize;
+    padding: 0.5*@fontSize;
+    line-height: 100%;
+    & + .inputLabel {
+      .inputContent {
+        font-size: -@placeholderActFont+@fontSize;
+        color: @placeholderAct;
+      }
+    }
+  }
+  &.down {
+    display: flex;
+    flex-direction: column;
+  }
+  &.left{
+    display: flex;
+    flex-direction: row;
+    .inputLabel{
+      order: 1;
+    }
+    .inputText{
+      order: 2;
+      height: @fontSize;
+      padding: 0.5*@fontSize 0;
+      &:focus{
+        padding: 0.5*@fontSize;
+      }
+    }
+  }
+  &.right{
+    display: flex;
+    .inputText{
+      height: @fontSize;
+      padding: 0.5*@fontSize 0;
+      &:focus{
+        padding: 0.5*@fontSize;
+      }
+    }
+  }
+  &.top {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
