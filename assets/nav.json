@@ -26,6 +26,11 @@
           "code": "D002_3",
           "name": "select",
           "link": "/component/select/select.html"
+        },
+        {
+          "code": "D002_4",
+          "name": "input[text]",
+          "link": "/component/input[text]/input[text].html"
         }
       ]
     }
