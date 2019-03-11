@@ -54,7 +54,8 @@ function defineReactive(data, key, val,callback) {
       return val;
     },
     set: function(newVal) {
-      callback(key,val,newVal);
+      callback(key,val,newVal,data);
+      val = newVal;
     }
   });
 }

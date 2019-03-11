@@ -20,28 +20,32 @@ HTMLSelectElement.prototype.f = function () {
     li.innerHTML = item.textContent;
     li.addEventListener('click', function (e) {
       e.stopPropagation();
-      $$('li.open',dropdown).classList.remove('open');
       $this.value = this.value;
       $this.v.html = this.textContent;
-      this.classList.add('open');
+      $this.v.select = this;
       $this.dispatchEvent(new Event('change'));
       dropdown.classList.remove('open');
     });
   }
-  $$('li[value="' + value + '"]',dropdown).classList.add('open');
+  $this.v.select = $$('li[value="' + value + '"]',dropdown);
+  $this.v.select.classList.add('open');
   $this.style.display = 'none';
 
   select.addEventListener('click', function (e) {
     e.stopPropagation();
     dropdown.classList.toggle('open');
   });
-  observe($this.v, function (key, val, newVal) {
+  observe($this.v, function (key, val, newVal,data) {
     switch (key) {
       case 'html':
         select.innerHTML = newVal;
         break;
       case 'value':
         $this.value = newVal;
+        break;
+      case 'select':
+        val.classList.remove('open');
+        newVal.classList.add('open');
         break;
       default:
         break;
