@@ -1,3 +1,4 @@
+/* global $$, create, setProperty */
 const tabListItem = $$('.tabList ul');
 const tabContentList = $$('.tabContentList');
 const menu = $$('#mainMenu ul');
@@ -11,44 +12,6 @@ const delayUp = 500;
 fetch('assets/nav.json').then(res => res.json()).then(res => {
   gMenu(res.data,addIframe);
 });
-
-/**
- * 查找DOM元素
- * @param {String,Element} e 元素节点或ID、class名称
- * @param {Element} [ele] 可选 父级元素 默认为document
- * @returns {Element} 返回的元素
- */
-function $$(e, ele) {
-  let _e = ele || document;
-  return _e.querySelector(e);
-}
-
-/**
- *
- * @param {String} e 元素标签
- * @param {Element} [ele] 需要插入元素的宿主元素
- */
-function create(e, ele) {
-  let _e = ele;
-  let element = document.createElement(e);
-  if (_e) {
-    _e.appendChild(element);
-  }
-  return element;
-}
-
-/**
- * 给元素设置属性。
- * @param {Element} ele 设置属性的元素
- * @param {Object} option 需要设置的属性对象
- */
-function setProperty(ele, option) {
-  for (let key in option) {
-    if (option.hasOwnProperty(key)) {
-      ele[key] = option[key];
-    }
-  }
-}
 
 function addTab(link) {
   let tabListItemActive = $$('.active', tabListItem);

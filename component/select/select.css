@@ -1,0 +1,70 @@
+.selectContainer {
+  position: relative;
+  width: 480px;
+  height: 48px;
+}
+.select {
+  position: absolute;
+  width: 480px;
+  display: inline-block;
+}
+.chosen-value {
+  display: block;
+  width: 100%;
+}
+.chosen-value {
+  font-weight: 600;
+  height: 48px;
+  font-size: 16px;
+  padding: 8px;
+  background-color: #FAFCFD;
+  border: 3px solid transparent;
+  transition: 0.3s ease-in-out;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: #000;
+}
+.chosen-value:hover,
+.chosen-value:focus {
+  background-color: #7dfff8;
+  cursor: pointer;
+}
+.selectList {
+  list-style: none;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+}
+.selectList.open {
+  max-height: 320px;
+  overflow: auto;
+}
+.selectList li {
+  position: relative;
+  background-color: #FAFCFD;
+  padding: 16px;
+  font-size: 17.6px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+  opacity: 1;
+}
+.selectList li:hover,
+.selectList li.open {
+  background-color: #7dfff8;
+}
+.selectList li.closed {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  opacity: 0;
+}
+/*# sourceMappingURL=select.css.map */

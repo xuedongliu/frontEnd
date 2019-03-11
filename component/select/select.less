@@ -1,0 +1,84 @@
+@import "../../assets/_defaultSetting";
+
+@fontSize: @baseFontSize;
+@color:#000;
+@width: @fontSize*30;
+@activeItemBgColor: #7dfff8;
+@selectFontWeight:600;
+@selectListMaxHeight:320px;
+@selectListPadding:@fontSize;
+@selectListFontSize:1.1*@fontSize;
+@display: inline-block;
+.selectContainer{
+  position: relative;
+  width: @width;
+  height: 3*@fontSize;
+}
+.select {
+  position: absolute;
+  width: @width;
+  display: @display;
+}
+
+.chosen-value {
+  display: block;
+  width: 100%;
+}
+
+.chosen-value {
+  font-weight: @selectFontWeight;
+  height: 3*@fontSize;
+  font-size: @fontSize;
+  padding: @fontSize/2;
+  background-color: #FAFCFD;
+  border: 3px solid transparent;
+  transition: .3s ease-in-out;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: @color;
+  &:hover, &:focus {
+    background-color: @activeItemBgColor;
+    cursor: pointer;
+  }
+}
+
+
+.selectList {
+  list-style: none;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: .3s ease-in-out;
+  transition: .3s ease-in-out;
+
+  &.open {
+    max-height: @selectListMaxHeight;
+    overflow: auto;
+  }
+  li{
+    position: relative;
+    background-color: #FAFCFD;
+    padding: @selectListPadding;
+    font-size: @selectListFontSize;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    -webkit-transition: background-color .3s;
+    transition: background-color .3s;
+    opacity: 1;
+    &:hover,&.open{
+      background-color: @activeItemBgColor;
+    }
+  }
+}
+
+.selectList li.closed {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  opacity: 0;
+}
