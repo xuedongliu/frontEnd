@@ -59,3 +59,15 @@ function defineReactive(data, key, val,callback) {
     }
   });
 }
+
+function removeAllChild(selector) {
+  let _e;
+  if (typeof selector!== 'string'){
+    _e = selector;
+  } else {
+    _e = $$(selector);
+  }
+  while (_e.hasChildNodes()){
+    _e.removeChild(_e.firstChild);
+  }
+}

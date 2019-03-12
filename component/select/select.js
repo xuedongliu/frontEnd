@@ -1,4 +1,4 @@
-/* global $$, create, observe */
+/* global create, observe, removeAllChild */
 /**
  *
  * @param {Object} [data]
@@ -45,12 +45,14 @@ HTMLSelectElement.prototype.f = function (data) {
       $this.v.select = li;
       select.innerHTML = item.innerHTML;
     }
-    li.addEventListener('click', function (e) {
-      e.stopPropagation();
-      $this.v.select = this;
-      $this.v.show = false;
-    });
+
   }
+  dropdown.addEventListener('click',function (e) {
+    // console.log(e);
+    e.path;
+    $this.v.select = e.target;
+    $this.v.show = false;
+  },false);
   $this.v.select.classList.add('open');
   $this.style.display = 'none';
 
@@ -65,7 +67,7 @@ HTMLSelectElement.prototype.f = function (data) {
         select.innerHTML = newVal.innerHTML;
         val.classList.remove('open');
         newVal.classList.add('open');
-        $this.value = newVal.val;
+        $this.val = newVal.val;
         $this.dispatchEvent(new Event('change'));
         break;
       case 'show':
@@ -99,9 +101,24 @@ HTMLSelectElement.prototype.up = function(data) {
     $this.f(data);
     return;
   }
-  $this._c.select.remove();
-  $this._c.dropdown.remove();
-  $this.f(data);
+  let select = $this._c.select;
+  let dropdown = $this._c.dropdown;
+  removeAllChild(select);
+  removeAllChild(dropdown);
+  for (let i = 0; i < data.list.length; i++) {
+    const item = data.list[i];
+    let li = create('li', dropdown);
+    for (let key in item) {
+      if (item.hasOwnProperty(key)) {
+        li[key] = item[key];
+      }
+    }
+    if (item.val === data.selectValue) {
+      $this.v.select = li;
+      select.innerHTML = item.innerHTML;
+    }
+
+  }
 };
 
 let data = {
@@ -125,7 +142,7 @@ let select = document.querySelectorAll('select.select');
 select[0].f();
 select[1].f(data);
 select[1].addEventListener('change', function () {
-  console.log(this.value);
+  console.log(this.val);
 });
 
 /*
