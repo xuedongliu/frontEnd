@@ -1,13 +1,15 @@
 /* global $$, create, observe */
-HTMLSelectElement.prototype.f = function () {
+/**
+ *
+ * @param {Object} [data]
+ * @returns {HTMLSelectElement}
+ */
+HTMLSelectElement.prototype.f = function (data) {
   // console.log(12345678);
   const $this = this;
   const parentElement = $this.parentElement;
   let value = $this.value || 0;
-  $this.v = {
-    html: '',
-    value: $this.value || 0
-  };
+  $this.v = {};
   let select = create('span', parentElement);
   let dropdown = create('ul', parentElement);
   select.classList.add('chosen-value');
@@ -20,10 +22,7 @@ HTMLSelectElement.prototype.f = function () {
     li.innerHTML = item.textContent;
     li.addEventListener('click', function (e) {
       e.stopPropagation();
-      $this.value = this.value;
-      $this.v.html = this.textContent;
       $this.v.select = this;
-      $this.dispatchEvent(new Event('change'));
       dropdown.classList.remove('open');
     });
   }
@@ -33,23 +32,16 @@ HTMLSelectElement.prototype.f = function () {
 
   select.addEventListener('click', function (e) {
     e.stopPropagation();
+    this.classList.toggle('open');
     dropdown.classList.toggle('open');
   });
-  observe($this.v, function (key, val, newVal,data) {
-    switch (key) {
-      case 'html':
-        select.innerHTML = newVal;
-        break;
-      case 'value':
-        $this.value = newVal;
-        break;
-      case 'select':
-        val.classList.remove('open');
-        newVal.classList.add('open');
-        break;
-      default:
-        break;
-    }
+  observe($this.v, function (key, val, newVal) {
+    select.innerHTML = newVal.innerHTML;
+    val.classList.remove('open');
+    newVal.classList.add('open');
+    $this.value = newVal.value;
+    $this.dispatchEvent(new Event('change'));
+
   });
   return $this;
 };
@@ -60,31 +52,14 @@ select.addEventListener('change',function () {
 });
 
 /*
-let inputField = document.querySelector('.chosen-value');
-let dropdown = document.querySelector('.selectList');
-let dropdownArray = [].concat(dropdown.querySelectorAll('li'));
-let dropdownItems = dropdownArray[0];
-
-let valueArray = [];
-dropdownItems.forEach(function (item) {
-  valueArray.push(item.textContent);
-});
-*/
-
-/*dropdownItems.forEach(function (item) {
-  item.addEventListener('click', function () {
-    inputField.value = item.textContent;
-    dropdown.classList.toggle('open');
-    dropdownItems.forEach(function (dropdownList) {
-      // dropdownList.classList.add('closed');
-    });
-  });
-});*/
-
-
-/*
-
-inputField.addEventListener('click', function (evt) {
-  dropdown.classList.toggle('open');
-});
+* data = {
+*   selectValue: 'D01',
+*   list: [
+*     {
+*       value: 'D01',
+*       html: 'test'
+*     }
+*   ]
+* }
+*
 */

@@ -1,18 +1,27 @@
 @import "../../assets/_defaultSetting";
 
-@fontSize: @baseFontSize;
-@color:#000;
-@width: @fontSize*30;
-@activeItemBgColor: #7dfff8;
-@selectFontWeight:600;
-@selectListMaxHeight:320px;
-@selectListPadding:@fontSize;
-@selectListFontSize:1.1*@fontSize;
-@display: inline-block;
+@fontSize: @baseFontSize;//字号
+@color:#000;//字体颜色
+@width: @fontSize*30;//select组件宽度
+@activeItemBgColor: #7dfff8;//悬浮或激活显示的背景颜色
+@activeItemFontColor: #000;//悬浮或激活显示的字体颜色
+@selectFontWeight:600;//字体粗细
+@selectListFontWeight:600;//下拉列表字体粗细
+@selectListMaxHeight:320px;//下拉列表最大高度
+@selectListPadding:@fontSize;//下拉列表内间距
+@selectListSplitLineWidth: 0;//下拉列表分割线宽度
+@selectListSplitLineStyle: solid;//下拉列表分割线样式
+@selectListSplitLineColor: transparent;//下拉列表分割线颜色
+@selectListFontSize:0.8*@fontSize;//下拉列表字号
+@display: inline-block;//select示形式
 .selectContainer{
   position: relative;
   width: @width;
   height: 3*@fontSize;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .select {
   position: absolute;
@@ -36,9 +45,10 @@
   box-sizing: border-box;
   cursor: pointer;
   color: @color;
-  &:hover, &:focus {
+  &:hover {
     background-color: @activeItemBgColor;
     cursor: pointer;
+    color: @activeItemFontColor;
   }
 }
 
@@ -70,8 +80,13 @@
     -webkit-transition: background-color .3s;
     transition: background-color .3s;
     opacity: 1;
+    font-weight: @selectListFontWeight;
     &:hover,&.open{
       background-color: @activeItemBgColor;
+      color: @activeItemFontColor;
+    }
+    &:not(:last-child){
+      border-bottom: @selectListSplitLineWidth @selectListSplitLineStyle @selectListSplitLineColor;
     }
   }
 }
