@@ -3,9 +3,12 @@
 @fontSize: @baseFontSize;//字号
 @color:#000;//字体颜色
 @width: @fontSize*30;//select组件宽度
+@bgColor: #fafcfd;//select背景色
+@selectListItemBgColor:#FAFCFD;//下拉项目背景色
 @activeItemBgColor: #7dfff8;//悬浮或激活显示的背景颜色
 @activeItemFontColor: #000;//悬浮或激活显示的字体颜色
 @selectFontWeight:600;//字体粗细
+@selectArrowColor:#000;//下拉箭头颜色
 @selectListFontWeight:600;//下拉列表字体粗细
 @selectListMaxHeight:320px;//下拉列表最大高度
 @selectListPadding:@fontSize;//下拉列表内间距
@@ -32,6 +35,20 @@
 .chosen-value {
   display: block;
   width: 100%;
+  position: relative;
+  &:after {
+    content: '\e6a0';
+    font-family: "iconfont";
+    position: absolute;
+    right: @fontSize;
+    top: @fontSize/2;
+    color: @selectArrowColor;
+    transition: .3s ease-in-out;
+    transform: rotate(180deg);
+  }
+  &.open:after{
+    transform: rotate(0deg);
+  }
 }
 
 .chosen-value {
@@ -39,7 +56,7 @@
   height: 3*@fontSize;
   font-size: @fontSize;
   padding: @fontSize/2;
-  background-color: #FAFCFD;
+  background-color: @bgColor;
   border: 3px solid transparent;
   transition: .3s ease-in-out;
   box-sizing: border-box;
@@ -59,7 +76,7 @@
   overflow: hidden;
   max-height: 0;
   -webkit-transition: .3s ease-in-out;
-  transition: .3s ease-in-out;
+  transition:max-height .3s ease-in-out;
 
   &.open {
     max-height: @selectListMaxHeight;
@@ -67,7 +84,7 @@
   }
   li{
     position: relative;
-    background-color: #FAFCFD;
+    background-color: @selectListItemBgColor;
     padding: @selectListPadding;
     font-size: @selectListFontSize;
     display: -webkit-box;
