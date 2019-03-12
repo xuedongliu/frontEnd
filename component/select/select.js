@@ -14,6 +14,9 @@ HTMLSelectElement.prototype.f = function (data) {
   };
   let select = create('span', parentElement);
   let dropdown = create('ul', parentElement);
+  $this._c = {};
+  $this._c.select = select;
+  $this._c.dropdown = dropdown;
   let dropdownListTemp = $this.querySelectorAll('option');
   let dropdownList = [];
   if (d.list) {
@@ -90,6 +93,16 @@ HTMLSelectElement.prototype.f = function (data) {
   return $this;
 };
 
+HTMLSelectElement.prototype.up = function(data) {
+  let $this = this;
+  if (!$this.nextElementSibling) {
+    $this.f(data);
+    return;
+  }
+  $this._c.select.remove();
+  $this._c.dropdown.remove();
+  $this.f(data);
+};
 
 let data = {
   selectValue: 'D01',
