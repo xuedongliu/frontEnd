@@ -1,18 +1,86 @@
-.checkbox{
-  width: 14px;
-  height: 14px;
+@defaultBorderWidth: 1px;
+@defaultBorderStyle: solid;
+@defaultBorderColor: #333;
+@defaultWidth: 20px;
+@checkedBackgroundColor: #5ecd62;
+@checkedColor: #fff;
+@checkedFontSize:16px;
+.chkList{
   display: flex;
-  border: 1px solid #cecfcf;
+  justify-content: left;
+  align-items: center;
+}
+.chk{
+  width: @defaultWidth;
+  height: @defaultWidth;
+  display: flex;
+  cursor: pointer;
+  margin: 0 10px;
   input[type=checkbox]{
     display: none;
   }
   label{
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    transition: all 250ms cubic-bezier(.4,.0,.23,1);
+    &:before{
+      content: "";
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-position: 50%;
+      transform: scale(0,0);
+      background-color: @checkedBackgroundColor;
+      transition: transform .3s;
+      border-radius: 2px;
+    }
+    &:after{
+      content: '';
+      font-family: iconfont !important;
+      color: @checkedColor;
+      font-size: @checkedFontSize;
+    }
+
+  }
+  input:disabled+label{
+    cursor: not-allowed;
+    opacity: .5;
   }
 }
 
-.react{
-  input[type=checkbox]:checked+label{
-    background : linear-gradient(45deg, rgba(24, 197, 214, 0.6) 0%, rgba(155, 255, 182, 0) 100%);
+.chk{
+  &.chk_default,
+  &.chk_radius{
+    label{
+      border: @defaultBorderWidth @defaultBorderStyle @defaultBorderColor;
+    }
+    input:checked+label{
+      border-color: @checkedBackgroundColor;
+      &:before{
+        transform: scale(1,1);
+      }
+      &:after{
+        content: '\e647';
+      }
+    }
+  }
+  &.chk_radius{
+    label{
+      border-radius: @defaultWidth/2;
+    }
   }
 }
