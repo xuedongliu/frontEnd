@@ -49,7 +49,6 @@ HTMLSelectElement.prototype.f = function (data) {
   }
   dropdown.addEventListener('click',function (e) {
     // console.log(e);
-    e.path;
     $this.v.select = e.target;
     $this.v.show = false;
   },false);
