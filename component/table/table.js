@@ -1,34 +1,50 @@
-/* global $$ create */
+/* global $$ create removeAllChild */
 let tableData = {
-  'total': 7,
+  'total': 11,
   'rows': [
     {
       'test': 1,
-      'test1': 12
-    },
-    {
-      'test': 23,
       'test1': 2
     },
     {
+      'test': 2,
+      'test1': 3
+    },
+    {
       'test': 3,
-      'test1': 31
+      'test1': 4
     },
     {
-      'test': 41,
-      'test1': 43
+      'test': 4,
+      'test1': 5
     },
     {
-      'test': 51,
-      'test1': 51
+      'test': 5,
+      'test1': 6
     },
     {
-      'test': 6124,
-      'test1': 612
+      'test': 6,
+      'test1': 7
     },
     {
-      'test': 7123,
-      'test1': 743321
+      'test': 7,
+      'test1': 8
+    },
+    {
+      'test': 8,
+      'test1': 9
+    },
+    {
+      'test': 9,
+      'test1': 10
+    },
+    {
+      'test': 10,
+      'test1': 11
+    },
+    {
+      'test': 11,
+      'test1': 12
     }
   ]
 };
@@ -53,13 +69,13 @@ function createTable() {
         width: 20
       },
       {
-        field: 'test1',
+        field: 'test',
         title: '新闻标题',
         width: 200,
         align: 'center'
       },
       {
-        field: 'test',
+        field: 'test1',
         title: '分类',
         sortable: true,
         width: 80,
@@ -73,10 +89,23 @@ function createTable() {
   const tableTMP = document.createDocumentFragment();
   const thead = create('thead', tableTMP);
   const tbody = create('tbody', tableTMP);
-  createTableFillThead([thead,root], option.columns);
-  createTableFillTbody([tbody,root], option);
+  createTableFillThead([thead, root], option.columns);
+  root.start = 0 ;
+  root.rmChild = function (selector) {
+    removeAllChild(selector);
+  };
+  root.showMsg = function (index,limit) {
+    console.log(`显示第${index+1}-${index+limit}条信息,共${option.data.total}条信息`);
+  };
+  if (option.pagination) {
+    createTableTbodyWithPagination(tbody,option.data,option.columns,option.pageSize,root);
+  } else {
+    createTableFillTbody([tbody, root], option);
+  }
   table.appendChild(tableTMP);
   root.appendChild(table);
+
+
 }
 
 /**
@@ -94,7 +123,7 @@ function createTableFillThead(root, data, render) {
     if (item.checkbox) {
       th.appendChild(createCheckbox({
         radius: item.radius
-      },true,root[1]));
+      }, true, root[1]));
     }
     for (let key in item) {
       if (item.hasOwnProperty(key)) {
@@ -118,9 +147,9 @@ function createTableFillTbody(root, config) {
     const tr = create('tr', TMPRoot);
     for (let j = 0; j < map.length; j++) {
       const cell = map[j];
-      const td = create('td',tr);
-      if (cell.checkbox&&j<map.length){
-        td.appendChild(createCheckbox({radius:cell.radius},null,root[1]));
+      const td = create('td', tr);
+      if (cell.checkbox && j < map.length) {
+        td.appendChild(createCheckbox({radius: cell.radius}, null, root[1]));
         continue;
       }
       for (let key in cell) {
@@ -143,22 +172,22 @@ function createTableFillTbody(root, config) {
   root[0].appendChild(TMPRoot);
 }
 
-function createCheckbox(value,top,root) {
-  let id = 'checkbox' + new Date().getTime()+Math.random();
-  let checked = value.checked?'checked':'';
-  let disabled = value.disabled?'disabled':'';
+function createCheckbox(value, top, root) {
+  let id = 'checkbox' + new Date().getTime() + Math.random();
+  let checked = value.checked ? 'checked' : '';
+  let disabled = value.disabled ? 'disabled' : '';
   const TMP = document.createDocumentFragment();
-  let chkContainer = create('div',TMP);
+  let chkContainer = create('div', TMP);
   chkContainer.classList.add('chk', 'chk_default');
   if (value.radius) {
     chkContainer.classList.add('chk_radius');
   }
   chkContainer.innerHTML = `<input type="checkbox" id="${id}" ${checked} ${disabled}>
         <label for="${id}"></label>`;
-  let input = $$('input',chkContainer);
+  let input = $$('input', chkContainer);
   if (top) {
     root.windowCheck = input;
-    input.addEventListener('change',function (e) {
+    input.addEventListener('change', function (e) {
       if (this.checked) {
         root.windowCheckTask.forEach(function (item) {
           item.checked = true;
@@ -168,14 +197,13 @@ function createCheckbox(value,top,root) {
           item.checked = false;
         });
       }
-    },false);
-  }else {
+    }, false);
+  } else {
     root.windowCheckTask.push(input);
-    input.addEventListener('change',function (e) {
+    input.addEventListener('change', function (e) {
       let result = root.windowCheckTask.filter(item => {
         return item.checked;
       });
-      console.log(result.length,root.windowCheckTask.length)
       root.windowCheck.checked = result.length === root.windowCheckTask.length;
     });
   }
@@ -183,3 +211,39 @@ function createCheckbox(value,top,root) {
   return TMP;
 }
 
+function createTableTbodyWithPagination(tbody,data,columns,limit,root) {
+  console.log(tbody,data,limit);
+  const TMPRoot = document.createDocumentFragment();
+  let map = columns;
+  let tbodyData = data.rows;
+  let length = limit < data.total? limit:data.total;
+  for (let i = 0; i < length; i++) {
+    const row = tbodyData[i];
+    const tr = create('tr', TMPRoot);
+    for (let j = 0; j < map.length; j++) {
+      const cell = map[j];
+      const td = create('td', tr);
+      if (cell.checkbox && j < map.length) {
+        td.appendChild(createCheckbox({radius: cell.radius}, null, root));
+        continue;
+      }
+      for (let key in cell) {
+        if (cell.hasOwnProperty(key)) {
+          switch (key) {
+            case 'field':
+              td.innerHTML = row[cell[key]];
+              break;
+            case 'class':
+              td.classList.add(cell[key]);
+              break;
+            default:
+              td.setAttribute(key, cell[key]);
+              break;
+          }
+        }
+      }
+    }
+  }
+  tbody.appendChild(TMPRoot);
+  root.showMsg(root.start,length);
+}

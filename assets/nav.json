@@ -4,48 +4,48 @@
       "code": "D001",
       "name": "主页",
       "icon": "&#xe606;",
-      "link": "/"
+      "link": ""
     },
     {
       "code": "D002",
       "name": "组件",
-      "link": "/",
+      "link": "",
       "icon": "&#xe603;",
       "child": [
         {
           "code": "D002_1",
           "name": "按钮",
-          "link": "/component/button/button.html"
+          "link": "component/button/button.html"
         },
         {
           "code": "D002_2",
           "name": "switch",
-          "link": "/component/switch/switch.html"
+          "link": "component/switch/switch.html"
         },
         {
           "code": "D002_3",
           "name": "select",
-          "link": "/component/select/select.html"
+          "link": "component/select/select.html"
         },
         {
           "code": "D002_4",
           "name": "input[text]",
-          "link": "/component/input[text]/input[text].html"
+          "link": "component/input[text]/input[text].html"
         },
         {
           "code": "D002_5",
           "name": "checkbox",
-          "link": "/component/checkbox/checkbox.html"
+          "link": "component/checkbox/checkbox.html"
         },
         {
           "code": "D002_6",
           "name": "radio",
-          "link": "/component/radio/radio.html"
+          "link": "component/radio/radio.html"
         },
         {
           "code": "D002_7",
           "name": "table",
-          "link": "/component/table/table.html"
+          "link": "component/table/table.html"
         }
       ]
     }
