@@ -4,7 +4,11 @@
 @color:#000;//字体颜色
 @width: @fontSize*30;//select组件宽度
 @bgColor: #fafcfd;//select背景色
+@selectBorderWidth: 1px;//select边框宽度
+@selectBorderStyle: solid;//select边框样式
+@selectBorderColor: transparent;//select边框颜色
 @selectListItemBgColor:#FAFCFD;//下拉项目背景色
+@selectListItemColor:#000;//下拉项目字体色
 @activeItemBgColor: #7dfff8;//悬浮或激活显示的背景颜色
 @activeItemFontColor: #000;//悬浮或激活显示的字体颜色
 @selectFontWeight:600;//字体粗细
@@ -57,7 +61,7 @@
   font-size: @fontSize;
   padding: @fontSize/2;
   background-color: @bgColor;
-  border: 3px solid transparent;
+  border: @selectBorderWidth @selectBorderStyle @selectBorderColor;
   transition: .3s ease-in-out;
   box-sizing: border-box;
   cursor: pointer;
@@ -98,6 +102,7 @@
     transition: background-color .3s;
     opacity: 1;
     font-weight: @selectListFontWeight;
+    color: @selectListItemColor;
     &:hover,&.open{
       background-color: @activeItemBgColor;
       color: @activeItemFontColor;

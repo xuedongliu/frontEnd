@@ -41,6 +41,11 @@
           "code": "D002_6",
           "name": "radio",
           "link": "/component/radio/radio.html"
+        },
+        {
+          "code": "D002_7",
+          "name": "table",
+          "link": "/component/table/table.html"
         }
       ]
     }

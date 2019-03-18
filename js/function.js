@@ -13,7 +13,7 @@ function $$(e, ele) {
 /**
  *
  * @param {String} e 元素标签
- * @param {Element} [ele] 需要插入元素的宿主元素
+ * @param {Element|DocumentFragment} [ele] 需要插入元素的宿主元素
  */
 function create(e, ele) {
   let _e = ele;

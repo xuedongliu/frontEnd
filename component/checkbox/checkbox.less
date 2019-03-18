@@ -1,3 +1,4 @@
+@import "../thirdParty/iconfont/iconfont.css";
 @defaultBorderWidth: 1px;
 @defaultBorderStyle: solid;
 @defaultBorderColor: #333;
@@ -5,6 +6,7 @@
 @checkedBackgroundColor: #5ecd62;
 @checkedColor: #fff;
 @checkedFontSize:16px;
+@checkedMargin: 0 10px;
 .chkList{
   display: flex;
   justify-content: left;
@@ -15,7 +17,7 @@
   height: @defaultWidth;
   display: flex;
   cursor: pointer;
-  margin: 0 10px;
+  margin: @checkedMargin;
   input[type=checkbox]{
     display: none;
   }
@@ -81,6 +83,9 @@
   &.chk_radius{
     label{
       border-radius: @defaultWidth/2;
+      &:before{
+        border-radius: @defaultWidth/2;
+      }
     }
   }
 }
