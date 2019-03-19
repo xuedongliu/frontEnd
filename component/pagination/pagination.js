@@ -1,6 +1,6 @@
 import {$$, create, observe, removeAllChild} from './../../js/function.js';
 
-const SHOWNUMBER = 5;
+const SHOWNUMBER = 7;
 
 function pagination(total, size, now, paginationListContainer, callback) {
   //初始化
@@ -14,7 +14,7 @@ function pagination(total, size, now, paginationListContainer, callback) {
   const prev = create('button', paginationListTMP);
   prev.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemPrev');
   prev.innerHTML = '上一页';
-  if (showNumber === 0 ){
+  if (showNumber === 0) {
     prev.setAttribute('disabled', 'disabled');
     first.setAttribute('disabled', 'disabled');
   }
@@ -27,6 +27,7 @@ function pagination(total, size, now, paginationListContainer, callback) {
       paginationItemChild.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemChild');
       paginationItemChild.innerHTML = i + 1;
       paginationItemChild.setAttribute('dataIndex', i);
+      paginationItemChild.dataIndex = i;
       paginationListTask.push(paginationItemChild);
     }
   } else {
@@ -35,6 +36,7 @@ function pagination(total, size, now, paginationListContainer, callback) {
       paginationItemChild.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemChild');
       paginationItemChild.innerHTML = i + 1;
       paginationItemChild.setAttribute('dataIndex', i);
+      paginationItemChild.dataIndex = i;
       paginationListTask.push(paginationItemChild);
     }
   }
@@ -59,12 +61,12 @@ function pagination(total, size, now, paginationListContainer, callback) {
     SHOWNUMBER
   };
   console.log(PA);
-  const middle = Math.ceil(pageCount/2);
+  const middle = Math.floor(SHOWNUMBER / 2);
+  const center = Math.ceil(SHOWNUMBER/2);
   observe(PA, function (key, val, newVal, data) {
-    console.log(key, val, newVal, data)
+    // console.log(key, val, newVal, data)
     switch (key) {
       case 'now':
-        PA.selector = $$(`button[dataIndex="${newVal}"]`, paginationList);
         if (newVal === 0) {
           prev.setAttribute('disabled', 'disabled');
           first.setAttribute('disabled', 'disabled');
@@ -87,13 +89,45 @@ function pagination(total, size, now, paginationListContainer, callback) {
           next.classList.remove('disabled');
           last.classList.remove('disabled');
         }
-        if (newVal>middle){
-
+        selector = $$(`button[dataIndex="${newVal}"]`, paginationList);
+        if (data.paginationListTask.indexOf(selector) > center-1||newVal === data.pageCount - 1) {
+          if(newVal>=data.pageCount - center){
+            let j = 0;
+            for (let i = data.paginationListTask.length-1; i >= 0; i--) {
+              const botton = data.paginationListTask[i];
+              botton.innerHTML = data.pageCount - j;
+              botton.setAttribute('dataIndex',data.pageCount - j - 1);
+              j++;
+            }
+          } else {
+            data.paginationListTask.forEach(function (item,index) {
+              item.dataIndex = newVal -middle + index;
+              item.setAttribute('dataIndex',item.dataIndex);
+              item.innerHTML = item.dataIndex+1;
+            });
+          }
+        }else {
+          if (newVal<center) {
+            for (let i = 0; i < data.paginationListTask.length; i++) {
+              const botton = data.paginationListTask[i];
+              botton.innerHTML = i+1;
+              botton.setAttribute('dataIndex',i);
+            }
+          }else {
+            data.paginationListTask.forEach(function (item,index) {
+              item.dataIndex = newVal -middle + index;
+              item.setAttribute('dataIndex',item.dataIndex);
+              item.innerHTML = item.dataIndex+1;
+            });
+          }
         }
+        PA.selector = $$(`button[dataIndex="${newVal}"]`, paginationList);
+        callback(newVal*size,size);
         break;
       case 'selector':
         val.classList.remove('btn_primary');
         newVal.classList.add('btn_primary');
+        // console.log(PA.now);
         break;
       default:
         break;
@@ -114,10 +148,21 @@ function pagination(total, size, now, paginationListContainer, callback) {
   paginationListTask.forEach(function (value) {
     value.addEventListener('click', function (e) {
       e.stopPropagation();
-      PA.now = this.getAttribute('dataIndex')-0;
+      PA.now = this.getAttribute('dataIndex') - 0;
     });
   });
+  first.addEventListener('click',function (e) {
+    e.stopPropagation();
+    PA.now = 0;
+  });
+  last.addEventListener('click',function (e) {
+    e.stopPropagation();
+    PA.now = pageCount-1;
+  })
+  callback(now*size,size);
 }
 
-pagination(26, 5, 0, null);
+pagination(260, 10, 0, null,function (start,length) {
+  console.log(start,length);
+});
 export {pagination};
