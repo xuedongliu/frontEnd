@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * 查找DOM元素
  * @param {String,Element} e 元素节点或ID、class名称
@@ -71,3 +70,5 @@ function removeAllChild(selector) {
     _e.removeChild(_e.firstChild);
   }
 }
+
+export {$$, create, setProperty, observe, removeAllChild};

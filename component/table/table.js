@@ -1,4 +1,4 @@
-/* global $$ create removeAllChild */
+import {$$, create, removeAllChild} from './../../js/function.js';
 let tableData = {
   'total': 11,
   'rows': [
@@ -89,23 +89,27 @@ function createTable() {
   const tableTMP = document.createDocumentFragment();
   const thead = create('thead', tableTMP);
   const tbody = create('tbody', tableTMP);
+  const status = create('div');
+  const infoMsg = create('span',status);
+  status.classList.add('table-footer-container');
+  infoMsg.classList.add('table-footer-msg');
   createTableFillThead([thead, root], option.columns);
   root.start = 0 ;
   root.rmChild = function (selector) {
     removeAllChild(selector);
   };
   root.showMsg = function (index,limit) {
-    console.log(`显示第${index+1}-${index+limit}条信息,共${option.data.total}条信息`);
+    infoMsg.innerHTML = `显示第${index+1}-${index+limit}条信息,共${option.data.total}条信息`;
   };
   if (option.pagination) {
-    createTableTbodyWithPagination(tbody,option.data,option.columns,option.pageSize,root);
+    createTableTbodyWithPagination(tbody,option.data,option.columns,root.start,option.pageSize,root);
+
   } else {
     createTableFillTbody([tbody, root], option);
   }
   table.appendChild(tableTMP);
   root.appendChild(table);
-
-
+  root.appendChild(status);
 }
 
 /**
@@ -211,13 +215,13 @@ function createCheckbox(value, top, root) {
   return TMP;
 }
 
-function createTableTbodyWithPagination(tbody,data,columns,limit,root) {
+function createTableTbodyWithPagination(tbody,data,columns,pageStart,limit,root) {
   console.log(tbody,data,limit);
   const TMPRoot = document.createDocumentFragment();
   let map = columns;
   let tbodyData = data.rows;
   let length = limit < data.total? limit:data.total;
-  for (let i = 0; i < length; i++) {
+  for (let i = pageStart; i < length; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
     for (let j = 0; j < map.length; j++) {

@@ -1,4 +1,4 @@
-/* global $$, create, setProperty */
+import {$$, create, setProperty} from './../../js/function.js';
 const tabListItem = $$('.tabList ul');
 const tabContentList = $$('.tabContentList');
 const menu = $$('#mainMenu ul');

@@ -1,4 +1,4 @@
-/* global create, observe, removeAllChild */
+import { create, observe, removeAllChild} from './../../js/function.js';
 /**
  *
  * @param {Object} [data]
