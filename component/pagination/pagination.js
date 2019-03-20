@@ -21,6 +21,12 @@ function pagination(total, size, now, paginationListContainer, callback) {
   const paginationListTask = [];
 
   let pageCount = Math.ceil(total / size);
+  if (showNumber >= pageCount - 1) {
+    showNumber = pageCount - 1;
+  }
+  if (showNumber < 0) {
+    showNumber = 0;
+  }
   if (pageCount < SHOWNUMBER) {
     for (let i = 0; i < pageCount; i++) {
       let paginationItemChild = create('button', paginationListTMP);
@@ -48,21 +54,17 @@ function pagination(total, size, now, paginationListContainer, callback) {
   last.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemLast');
   last.innerHTML = '末页';
   paginationList.appendChild(paginationListTMP);
-  let selector = $$(`button[dataIndex="${showNumber}"]`, paginationList);
-  selector.classList.add('btn_primary');
 
 
   //
   const PA = {
-    now,
-    selector,
+    now: 0,
+    selector: $$(`button[dataIndex="${0}"]`, paginationList),
     paginationListTask,
-    pageCount,
-    SHOWNUMBER
+    pageCount
   };
-  console.log(PA);
   const middle = Math.floor(SHOWNUMBER / 2);
-  const center = Math.ceil(SHOWNUMBER/2);
+  const center = Math.ceil(SHOWNUMBER / 2);
   observe(PA, function (key, val, newVal, data) {
     // console.log(key, val, newVal, data)
     switch (key) {
@@ -89,40 +91,39 @@ function pagination(total, size, now, paginationListContainer, callback) {
           next.classList.remove('disabled');
           last.classList.remove('disabled');
         }
-        selector = $$(`button[dataIndex="${newVal}"]`, paginationList);
-        if (data.paginationListTask.indexOf(selector) > center-1||newVal === data.pageCount - 1) {
-          if(newVal>=data.pageCount - center){
+        if (data.paginationListTask.indexOf($$(`button[dataIndex="${newVal}"]`, paginationList)) > center - 1 || newVal === data.pageCount - 1) {
+          if (newVal >= data.pageCount - center) {
             let j = 0;
-            for (let i = data.paginationListTask.length-1; i >= 0; i--) {
+            for (let i = data.paginationListTask.length - 1; i >= 0; i--) {
               const botton = data.paginationListTask[i];
               botton.innerHTML = data.pageCount - j;
-              botton.setAttribute('dataIndex',data.pageCount - j - 1);
+              botton.setAttribute('dataIndex', data.pageCount - j - 1);
               j++;
             }
           } else {
-            data.paginationListTask.forEach(function (item,index) {
-              item.dataIndex = newVal -middle + index;
-              item.setAttribute('dataIndex',item.dataIndex);
-              item.innerHTML = item.dataIndex+1;
+            data.paginationListTask.forEach(function (item, index) {
+              item.dataIndex = newVal - middle + index;
+              item.setAttribute('dataIndex', item.dataIndex);
+              item.innerHTML = item.dataIndex + 1;
             });
           }
-        }else {
-          if (newVal<center) {
+        } else {
+          if (newVal < center) {
             for (let i = 0; i < data.paginationListTask.length; i++) {
               const botton = data.paginationListTask[i];
-              botton.innerHTML = i+1;
-              botton.setAttribute('dataIndex',i);
+              botton.innerHTML = i + 1;
+              botton.setAttribute('dataIndex', i);
             }
-          }else {
-            data.paginationListTask.forEach(function (item,index) {
-              item.dataIndex = newVal -middle + index;
-              item.setAttribute('dataIndex',item.dataIndex);
-              item.innerHTML = item.dataIndex+1;
+          } else {
+            data.paginationListTask.forEach(function (item, index) {
+              item.dataIndex = newVal - middle + index;
+              item.setAttribute('dataIndex', item.dataIndex);
+              item.innerHTML = item.dataIndex + 1;
             });
           }
         }
         PA.selector = $$(`button[dataIndex="${newVal}"]`, paginationList);
-        callback(newVal*size,size);
+        callback(newVal * size, size);
         break;
       case 'selector':
         val.classList.remove('btn_primary');
@@ -133,6 +134,9 @@ function pagination(total, size, now, paginationListContainer, callback) {
         break;
     }
   });
+  PA.now = showNumber;
+  let selector = $$(`button[dataIndex="${showNumber}"]`, paginationList);
+  selector.classList.add('btn_primary');
   next.addEventListener('click', function (e) {
     e.stopPropagation();
     if (PA.now < pageCount) {
@@ -151,15 +155,15 @@ function pagination(total, size, now, paginationListContainer, callback) {
       PA.now = this.getAttribute('dataIndex') - 0;
     });
   });
-  first.addEventListener('click',function (e) {
+  first.addEventListener('click', function (e) {
     e.stopPropagation();
     PA.now = 0;
   });
-  last.addEventListener('click',function (e) {
+  last.addEventListener('click', function (e) {
     e.stopPropagation();
-    PA.now = pageCount-1;
-  })
-  callback(now*size,size);
+    PA.now = pageCount - 1;
+  });
+  // callback(showNumber * size, size);
 }
 
 /*pagination(260, 26, 0, null,function (start,length) {
