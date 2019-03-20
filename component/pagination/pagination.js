@@ -1,6 +1,6 @@
 import {$$, create, observe, removeAllChild} from './../../js/function.js';
 
-const SHOWNUMBER = 7;
+const SHOWNUMBER = 5;
 
 function pagination(total, size, now, paginationListContainer, callback) {
   //初始化
@@ -162,7 +162,7 @@ function pagination(total, size, now, paginationListContainer, callback) {
   callback(now*size,size);
 }
 
-pagination(260, 10, 0, null,function (start,length) {
+/*pagination(260, 26, 0, null,function (start,length) {
   console.log(start,length);
-});
+});*/
 export {pagination};

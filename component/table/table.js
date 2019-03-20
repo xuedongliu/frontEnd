@@ -1,53 +1,15 @@
 import {$$, create, removeAllChild} from './../../js/function.js';
+import {pagination} from '../pagination/pagination.js';
 let tableData = {
-  'total': 11,
-  'rows': [
-    {
-      'test': 1,
-      'test1': 2
-    },
-    {
-      'test': 2,
-      'test1': 3
-    },
-    {
-      'test': 3,
-      'test1': 4
-    },
-    {
-      'test': 4,
-      'test1': 5
-    },
-    {
-      'test': 5,
-      'test1': 6
-    },
-    {
-      'test': 6,
-      'test1': 7
-    },
-    {
-      'test': 7,
-      'test1': 8
-    },
-    {
-      'test': 8,
-      'test1': 9
-    },
-    {
-      'test': 9,
-      'test1': 10
-    },
-    {
-      'test': 10,
-      'test1': 11
-    },
-    {
-      'test': 11,
-      'test1': 12
-    }
-  ]
+  'total': 101,
+  'rows': []
 };
+for (let i = 0 ;i<tableData.total;i++){
+  tableData.rows.push({
+    'test':i+1,
+    'test1':i+2
+  });
+}
 createTable();
 
 function createTable() {
@@ -98,12 +60,13 @@ function createTable() {
   root.rmChild = function (selector) {
     removeAllChild(selector);
   };
-  root.showMsg = function (index,limit) {
-    infoMsg.innerHTML = `显示第${index+1}-${index+limit}条信息,共${option.data.total}条信息`;
+  root.showMsg = function (index,end) {
+    infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
   };
   if (option.pagination) {
-    createTableTbodyWithPagination(tbody,option.data,option.columns,root.start,option.pageSize,root);
-
+    pagination(option.data.total,option.pageSize,root.start,null,function (start, length) {
+      createTableTbodyWithPagination(tbody,option.data,option.columns,start,length,root);
+    });
   } else {
     createTableFillTbody([tbody, root], option);
   }
@@ -211,16 +174,19 @@ function createCheckbox(value, top, root) {
       root.windowCheck.checked = result.length === root.windowCheckTask.length;
     });
   }
-
   return TMP;
 }
 
 function createTableTbodyWithPagination(tbody,data,columns,pageStart,limit,root) {
   console.log(tbody,data,limit);
+  removeAllChild(tbody);
+  root.windowCheckTask.length = 0;
+  root.windowCheck.checked = false;
   const TMPRoot = document.createDocumentFragment();
   let map = columns;
   let tbodyData = data.rows;
-  let length = limit < data.total? limit:data.total;
+  let end = pageStart+limit;
+  let length =end > data.total?data.total:end;
   for (let i = pageStart; i < length; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
@@ -249,5 +215,5 @@ function createTableTbodyWithPagination(tbody,data,columns,pageStart,limit,root)
     }
   }
   tbody.appendChild(TMPRoot);
-  root.showMsg(root.start,length);
+  root.showMsg(pageStart,length);
 }
