@@ -1,11 +1,30 @@
 import {$$, create, observe, removeAllChild} from './../../js/function.js';
 
+/**
+ *
+ * @type {number} 设置展示的页数
+ */
 const SHOWNUMBER = 5;
 
-function pagination(total, size, now, paginationListContainer, callback) {
-  //初始化
+/**
+ * 分页函数
+ * @param data 数据
+ * @param size 每页显示数据
+ * @param now 默认显示第几页
+ * @param {Element|null} paginationListContainer 分页插件的填充位置
+ * @param {Element} root 宿主元素
+ * @param callback 点击页码的回调函数
+ */
+function pagination(data, size, now, paginationListContainer, root, callback) {
+
+  /**
+   * 分页初始化，添加必要class
+   */
+
   let showNumber = now;
+  let total = data.total;
   const paginationList = paginationListContainer || $$('.pagination');
+  paginationList.classList.add('pagination', 'btn_group');
   removeAllChild(paginationList);
   const paginationListTMP = document.createDocumentFragment();
   const first = create('button', paginationListTMP);
@@ -19,7 +38,7 @@ function pagination(total, size, now, paginationListContainer, callback) {
     first.setAttribute('disabled', 'disabled');
   }
   const paginationListTask = [];
-
+  //防止页数超出限制
   let pageCount = Math.ceil(total / size);
   if (showNumber >= pageCount - 1) {
     showNumber = pageCount - 1;
@@ -27,6 +46,8 @@ function pagination(total, size, now, paginationListContainer, callback) {
   if (showNumber < 0) {
     showNumber = 0;
   }
+  const middle = Math.floor(SHOWNUMBER / 2);
+  const center = Math.ceil(SHOWNUMBER / 2);
   if (pageCount < SHOWNUMBER) {
     for (let i = 0; i < pageCount; i++) {
       let paginationItemChild = create('button', paginationListTMP);
@@ -37,6 +58,9 @@ function pagination(total, size, now, paginationListContainer, callback) {
       paginationListTask.push(paginationItemChild);
     }
   } else {
+
+
+
     for (let i = 0; i < SHOWNUMBER; i++) {
       let paginationItemChild = create('button', paginationListTMP);
       paginationItemChild.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemChild');
@@ -44,6 +68,22 @@ function pagination(total, size, now, paginationListContainer, callback) {
       paginationItemChild.setAttribute('dataIndex', i);
       paginationItemChild.dataIndex = i;
       paginationListTask.push(paginationItemChild);
+    }
+
+    if (showNumber >= pageCount - center) {
+      let j = 0;
+      for (let i = paginationListTask.length - 1; i >= 0; i--) {
+        const button = paginationListTask[i];
+        button.innerHTML = pageCount - j;
+        button.setAttribute('dataIndex', pageCount - j - 1);
+        j++;
+      }
+    } else if(showNumber > center){
+      paginationListTask.forEach(function (item, index) {
+        item.dataIndex = showNumber - middle + index;
+        item.setAttribute('dataIndex', item.dataIndex);
+        item.innerHTML = item.dataIndex + 1;
+      });
     }
   }
 
@@ -55,16 +95,18 @@ function pagination(total, size, now, paginationListContainer, callback) {
   last.innerHTML = '末页';
   paginationList.appendChild(paginationListTMP);
 
+  /**
+   *
+   * 初始化结束
+   */
 
-  //
   const PA = {
-    now: 0,
-    selector: $$(`button[dataIndex="${0}"]`, paginationList),
+    now: showNumber,
+    selector: $$(`button[dataIndex="${showNumber}"]`, paginationList),
     paginationListTask,
     pageCount
   };
-  const middle = Math.floor(SHOWNUMBER / 2);
-  const center = Math.ceil(SHOWNUMBER / 2);
+
   observe(PA, function (key, val, newVal, data) {
     // console.log(key, val, newVal, data)
     switch (key) {
@@ -128,13 +170,11 @@ function pagination(total, size, now, paginationListContainer, callback) {
       case 'selector':
         val.classList.remove('btn_primary');
         newVal.classList.add('btn_primary');
-        // console.log(PA.now);
         break;
       default:
         break;
     }
   });
-  PA.now = showNumber;
   let selector = $$(`button[dataIndex="${showNumber}"]`, paginationList);
   selector.classList.add('btn_primary');
   next.addEventListener('click', function (e) {
@@ -163,10 +203,10 @@ function pagination(total, size, now, paginationListContainer, callback) {
     e.stopPropagation();
     PA.now = pageCount - 1;
   });
-  // callback(showNumber * size, size);
+  root.default(data);
 }
 
 /*pagination(260, 26, 0, null,function (start,length) {
   console.log(start,length);
 });*/
-export {pagination};
+export {pagination as paginationServer};

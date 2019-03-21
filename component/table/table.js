@@ -1,5 +1,6 @@
 import {$$, create, removeAllChild} from './../../js/function.js';
-import {pagination} from '../pagination/pagination.js';
+import {paginationServer} from '../pagination/pagination.server.js';
+import {paginationClient} from '../pagination/pagination.client.js';
 let tableData = {
   'total': 101,
   'rows': []
@@ -12,13 +13,13 @@ for (let i = 0 ;i<tableData.total;i++){
 }
 let test = createTable({
   el: '#table',
-  // pagination: true,
+  pagination: true,
   // sortable: true,
   ajax: getNewsList,
   data: tableData,
   sidePagination: 'server',
-  pageNumber:1,
-  pageSize: 10, //每页数据,
+  pageNumber:2,
+  pageSize: 20, //每页数据,
   pageList: [10, 25, 50, 100, 'All'],
   columns: [
     {
@@ -51,8 +52,8 @@ function createTable(opt) {
     ajax: opt.ajax||null,
     data: opt.data||{},
     sidePagination: 'server',
-    pageNumber: opt.pageNumber||1, //默认加载页
-    pageSize: opt.pageshow||10, //每页数据,
+    pageNumber: opt.pageNumber||1,
+    pageSize: opt.pageSize||10,
     // pageList: [10, 25, 50, 100, 'All'],
     columns: opt.columns||[]
   };
@@ -74,34 +75,41 @@ function createTable(opt) {
   root.showMsg = function (index,end) {
     infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
   };
-
-  /*if (option.pagination) {
-    pagination(option.data.total,option.pageSize,root.start,null,function (start, length) {
-      createTableTbodyWithPagination(tbody,option.data,option.columns,start,length,root);
-    });
-  } else {
-    createTableFillTbody(tbody, root, option.columns,opt.data);
-  }*/
   table.appendChild(tableTMP);
   root.appendChild(table);
   root.appendChild(status);
 
   if (option.ajax){
     option.ajax({start:root.start * option.pageSize,length:option.pageSize},root);
+  }else {
+    if (option.pagination) {
+      paginationClient(option.data.total,option.pageSize,root.start,null,function (start, length) {
+        createTableTbody(tbody,option.data,option.columns,start,length,root,'client');
+      });
+    } else {
+      createTableTbody(tbody, option.data, option.columns,0,option.pageSize,root, 'noe');
+    }
   }
   root._opt = option;
   root._init = true;
   root.update = function (data) {
     if (root._init){
       root._init = false;
-      pagination(data.total,option.pageSize,root.start,null,function (start,length) {
-        option.ajax({start,length},root);
-      });
+      if (root._opt.pagination){
+        paginationServer(data,option.pageSize,root.start,null, root,function (start,length) {
+          option.ajax({start,length},root);
+        });
+      }else {
+        option.data = data;
+        createTableTbody(tbody,option.data,option.columns,0,option.pageSize,root,'none');
+      }
     }else {
-      createTableTbodyWithPaginationServer(tbody,data,option.columns,data.start,data.length,root);
+      createTableTbody(tbody,data,option.columns,data.start,data.length,root,'server');
     }
   };
-  // root.update();
+  root.default = function (data) {
+    createTableTbody(tbody,data,option.columns,data.start,data.length,root,'server');
+  };
   return root;
 }
 
@@ -135,10 +143,51 @@ function createTableFillThead(root, data, render) {
   root[0].appendChild(TMPRoot);
 }
 
-function createTableFillTbody(tbody, root, map, data) {
+/**
+ * 绘制表格函数
+ * @param {HTMLElement} tbody tbody元素
+ * @param {Object} data 渲染数据
+ * @param {Array} map 数据和表头的对应关系
+ * @param {Number} pageStart 页面开始时数据的index
+ * @param {Number} limit 每页显示的数据条数
+ * @param {HTMLElement|Element} root 宿主元素
+ * @param {Array} root.windowCheckTask 表格中input集合
+ * @param {HTMLInputElement} root.windowCheck 表头的input
+ * @param {String} type=[none|server|client] type 分页方式
+ */
+function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
+  removeAllChild(tbody);
+  root.windowCheckTask.length = 0;
+  root.windowCheck.checked = false;
   const TMPRoot = document.createDocumentFragment();
   let tbodyData = data.rows;
-  for (let i = 0; i < tbodyData.length; i++) {
+  let end = pageStart+limit;
+  let length = end > data.total ? data.total : end;
+  let startCondition;
+  let endCondition;
+  let s;
+  let e;
+  switch (type) {
+    case 'server':
+      startCondition = 0;
+      endCondition = tbodyData.length;
+      s = pageStart;
+      e = length;
+      break;
+    case 'client':
+      startCondition = pageStart;
+      endCondition = length;
+      s = pageStart;
+      e = length;
+      break;
+    default:
+      startCondition = 0;
+      endCondition = tbodyData.length;
+      s = 0;
+      e = data.total;
+      break;
+  }
+  for (let i = startCondition; i < endCondition; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
     for (let j = 0; j < map.length; j++) {
@@ -166,7 +215,7 @@ function createTableFillTbody(tbody, root, map, data) {
     }
   }
   tbody.appendChild(TMPRoot);
-  root.showMsg(0,data.total);
+  root.showMsg(s, e);
 }
 
 function createCheckbox(value, top, root) {
@@ -206,97 +255,14 @@ function createCheckbox(value, top, root) {
   }
   return TMP;
 }
-
-function createTableTbodyWithPagination(tbody,data,columns,pageStart,limit,root) {
-  // console.log(tbody,data,limit);
-  removeAllChild(tbody);
-  root.windowCheckTask.length = 0;
-  root.windowCheck.checked = false;
-  const TMPRoot = document.createDocumentFragment();
-  let map = columns;
-  let tbodyData = data.rows;
-  let end = pageStart+limit;
-  let length =end > data.total?data.total:end;
-  for (let i = pageStart; i < length; i++) {
-    const row = tbodyData[i];
-    const tr = create('tr', TMPRoot);
-    for (let j = 0; j < map.length; j++) {
-      const cell = map[j];
-      const td = create('td', tr);
-      if (cell.checkbox && j < map.length) {
-        td.appendChild(createCheckbox({radius: cell.radius}, null, root));
-        continue;
-      }
-      for (let key in cell) {
-        if (cell.hasOwnProperty(key)) {
-          switch (key) {
-            case 'field':
-              td.innerHTML = row[cell[key]];
-              break;
-            case 'class':
-              td.classList.add(cell[key]);
-              break;
-            default:
-              td.setAttribute(key, cell[key]);
-              break;
-          }
-        }
-      }
-    }
-  }
-  tbody.appendChild(TMPRoot);
-  root.showMsg(pageStart,length);
-}
-
-function createTableTbodyWithPaginationServer(tbody,data,columns,pageStart,limit,root) {
-  // console.log(tbody,data,limit);
-  removeAllChild(tbody);
-  root.windowCheckTask.length = 0;
-  root.windowCheck.checked = false;
-  const TMPRoot = document.createDocumentFragment();
-  let map = columns;
-  let tbodyData = data.rows;
-  let end = pageStart+limit;
-  let length =end > data.total?data.total:end;
-  for (let i = 0; i < tbodyData.length; i++) {
-    const row = tbodyData[i];
-    const tr = create('tr', TMPRoot);
-    for (let j = 0; j < map.length; j++) {
-      const cell = map[j];
-      const td = create('td', tr);
-      if (cell.checkbox && j < map.length) {
-        td.appendChild(createCheckbox({radius: cell.radius}, null, root));
-        continue;
-      }
-      for (let key in cell) {
-        if (cell.hasOwnProperty(key)) {
-          switch (key) {
-            case 'field':
-              td.innerHTML = row[cell[key]];
-              break;
-            case 'class':
-              td.classList.add(cell[key]);
-              break;
-            default:
-              td.setAttribute(key, cell[key]);
-              break;
-          }
-        }
-      }
-    }
-  }
-  tbody.appendChild(TMPRoot);
-  root.showMsg(pageStart,length);
-}
-
-function getNewsList({start ,length},root) {
-  console.log(start,length);
+function getNewsList({start ,length}) {
+  // console.log(start,length);
   setTimeout(function () {
     let tmp = {};
     tmp.total = tableData.total;
     tmp.start = start;
     tmp.length = length;
     tmp.rows = tableData.rows.slice(start,start+length);
-    root.update(tmp);
+    test.update(tmp);
   },1000);
 }
