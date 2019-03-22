@@ -51,6 +51,11 @@
           "code": "D002_8",
           "name": "pagination",
           "link": "component/pagination/pagination.html"
+        },
+        {
+          "code": "D002_9",
+          "name": "nav",
+          "link": "component/nav/nav.html"
         }
       ]
     }
