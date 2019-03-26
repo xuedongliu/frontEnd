@@ -1,6 +1,7 @@
 import {$$, create, removeAllChild} from './../../js/function.js';
 import {paginationServer} from '../pagination/pagination.server.js';
 import {paginationClient} from '../pagination/pagination.client.js';
+import {createCheckbox} from './../../js/generate.js';
 let tableData = {
   'total': 101,
   'rows': []
@@ -21,12 +22,14 @@ let test = createTable({
   pageNumber:2,
   pageSize: 20, //每页数据,
   pageList: [10, 25, 50, 100, 'All'],
+  stripe: true,
+  stripeClass: 'TTT',
   columns: [
     {
       checkbox: true,
       align: 'center',
       radius: true,
-      width: 20
+      width: 50
     },
     {
       field: 'test',
@@ -38,7 +41,6 @@ let test = createTable({
       field: 'test1',
       title: '分类',
       sortable: true,
-      width: 80,
       align: 'center'
     }
   ]
@@ -51,7 +53,9 @@ function createTable(opt) {
     sortable: opt.sortable||false,
     ajax: opt.ajax||null,
     data: opt.data||{},
-    sidePagination: 'server',
+    sidePagination:opt.sidePagination|| 'server',
+    stripe: opt.stripe||true,
+    stripeClass: opt.stripeClass||'',
     pageNumber: opt.pageNumber||1,
     pageSize: opt.pageSize||10,
     // pageList: [10, 25, 50, 100, 'All'],
@@ -67,6 +71,7 @@ function createTable(opt) {
   const infoMsg = create('span',status);
   status.classList.add('table-footer-container');
   infoMsg.classList.add('table-footer-msg');
+  table.classList.add('table');
   createTableFillThead([thead, root], option.columns);
   root.start = option.pageNumber-1 ;
   root.rmChild = function (selector) {
@@ -78,7 +83,9 @@ function createTable(opt) {
   table.appendChild(tableTMP);
   root.appendChild(table);
   root.appendChild(status);
-
+  if (option.stripe){
+    table.classList.add('stripe');
+  }
   if (option.ajax){
     option.ajax({start:root.start * option.pageSize,length:option.pageSize},root);
   }else {
@@ -152,6 +159,7 @@ function createTableFillThead(root, data, render) {
  * @param {Number} limit 每页显示的数据条数
  * @param {HTMLElement|Element} root 宿主元素
  * @param {Array} root.windowCheckTask 表格中input集合
+ * @param {Object} root._opt
  * @param {HTMLInputElement} root.windowCheck 表头的input
  * @param {String} type=[none|server|client] type 分页方式
  */
@@ -187,9 +195,14 @@ function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
       e = data.total;
       break;
   }
+  let stripe = root._opt.stripe;
+  let stripeClass = root._opt.stripeClass;
   for (let i = startCondition; i < endCondition; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
+    if (stripe&&i%2===1){
+      tr.classList.add(stripeClass);
+    }
     for (let j = 0; j < map.length; j++) {
       const cell = map[j];
       const td = create('td', tr);
@@ -218,43 +231,7 @@ function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
   root.showMsg(s, e);
 }
 
-function createCheckbox(value, top, root) {
-  let id = 'checkbox' + new Date().getTime() + Math.random();
-  let checked = value.checked ? 'checked' : '';
-  let disabled = value.disabled ? 'disabled' : '';
-  const TMP = document.createDocumentFragment();
-  let chkContainer = create('div', TMP);
-  chkContainer.classList.add('chk', 'chk_default');
-  if (value.radius) {
-    chkContainer.classList.add('chk_radius');
-  }
-  chkContainer.innerHTML = `<input type="checkbox" id="${id}" ${checked} ${disabled}>
-        <label for="${id}"></label>`;
-  let input = $$('input', chkContainer);
-  if (top) {
-    root.windowCheck = input;
-    input.addEventListener('change', function (e) {
-      if (this.checked) {
-        root.windowCheckTask.forEach(function (item) {
-          item.checked = true;
-        });
-      } else {
-        root.windowCheckTask.forEach(function (item) {
-          item.checked = false;
-        });
-      }
-    }, false);
-  } else {
-    root.windowCheckTask.push(input);
-    input.addEventListener('change', function (e) {
-      let result = root.windowCheckTask.filter(item => {
-        return item.checked;
-      });
-      root.windowCheck.checked = result.length === root.windowCheckTask.length;
-    });
-  }
-  return TMP;
-}
+
 function getNewsList({start ,length}) {
   // console.log(start,length);
   setTimeout(function () {
