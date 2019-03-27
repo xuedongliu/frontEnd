@@ -47,7 +47,62 @@ let test = createTable({
 });
 
 function createTable(opt) {
-  let option = {
+  let option = createTableInit(opt);
+
+  const root = $$(option.el);
+  const table = create('table.table');
+  const tableTMP = document.createDocumentFragment();
+  const thead = create('thead', tableTMP);
+  const tbody = create('tbody', tableTMP);
+  const status = create('div.table-footer-container');
+  const infoMsg = create('span.table-footer-msg',status);
+  createTableFillThead(thead, option._d, option.columns);
+  option._d.showMsg = function (index,end) {
+    infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
+  };
+  table.appendChild(tableTMP);
+  root.appendChild(table);
+  root.appendChild(status);
+  const pagination = create('div.pagination.btn_group',root);
+
+  if (option.stripe){
+    table.classList.add('stripe');
+  }
+  if (option.ajax){
+    option.ajax({start:option._d.start * option.pageSize,length:option.pageSize},root);
+  }else {
+    if (option.pagination) {
+      paginationClient(option.data.total,option.pageSize,option._d.start,pagination,function (start, length) {
+        createTableTbody(tbody,option.data,option.columns,start,length,option._d,'client');
+      });
+    } else {
+      createTableTbody(tbody, option.data, option.columns,0,option.pageSize,option._d, 'noe');
+    }
+  }
+  root._init = true;
+  root.update = function (data) {
+    if (root._init){
+      root._init = false;
+      if (option.pagination){
+        paginationServer(data,option.pageSize,option._d.start,pagination, root,function (start,length) {
+          option.ajax({start,length},root);
+        });
+      }else {
+        option.data = data;
+        createTableTbody(tbody,option.data,option.columns,0,option.pageSize,option._d,'none');
+      }
+    }else {
+      createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
+    }
+  };
+  root.default = function (data) {
+    createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
+  };
+  return root;
+}
+
+function createTableInit(opt) {
+  return {
     el: opt.el,
     pagination: opt.pagination||false,
     sortable: opt.sortable||false,
@@ -59,74 +114,24 @@ function createTable(opt) {
     pageNumber: opt.pageNumber||1,
     pageSize: opt.pageSize||10,
     // pageList: [10, 25, 50, 100, 'All'],
-    columns: opt.columns||[]
-  };
-  const root = $$(option.el);
-  root.windowCheckTask = [];
-  const table = create('table');
-  const tableTMP = document.createDocumentFragment();
-  const thead = create('thead', tableTMP);
-  const tbody = create('tbody', tableTMP);
-  const status = create('div');
-  const infoMsg = create('span',status);
-  status.classList.add('table-footer-container');
-  infoMsg.classList.add('table-footer-msg');
-  table.classList.add('table');
-  createTableFillThead([thead, root], option.columns);
-  root.start = option.pageNumber-1 ;
-  root.rmChild = function (selector) {
-    removeAllChild(selector);
-  };
-  root.showMsg = function (index,end) {
-    infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
-  };
-  table.appendChild(tableTMP);
-  root.appendChild(table);
-  root.appendChild(status);
-  if (option.stripe){
-    table.classList.add('stripe');
-  }
-  if (option.ajax){
-    option.ajax({start:root.start * option.pageSize,length:option.pageSize},root);
-  }else {
-    if (option.pagination) {
-      paginationClient(option.data.total,option.pageSize,root.start,null,function (start, length) {
-        createTableTbody(tbody,option.data,option.columns,start,length,root,'client');
-      });
-    } else {
-      createTableTbody(tbody, option.data, option.columns,0,option.pageSize,root, 'noe');
-    }
-  }
-  root._opt = option;
-  root._init = true;
-  root.update = function (data) {
-    if (root._init){
-      root._init = false;
-      if (root._opt.pagination){
-        paginationServer(data,option.pageSize,root.start,null, root,function (start,length) {
-          option.ajax({start,length},root);
-        });
-      }else {
-        option.data = data;
-        createTableTbody(tbody,option.data,option.columns,0,option.pageSize,root,'none');
-      }
-    }else {
-      createTableTbody(tbody,data,option.columns,data.start,data.length,root,'server');
+    columns: opt.columns||[],
+    _d:{
+      checkList : [],
+      stripe: opt.stripe||true,
+      stripeClass: opt.stripeClass||'',
+      start: opt.pageNumber - 1
     }
   };
-  root.default = function (data) {
-    createTableTbody(tbody,data,option.columns,data.start,data.length,root,'server');
-  };
-  return root;
 }
 
 /**
  *
+ * @param thead
  * @param root
  * @param data
  * @param [render]
  */
-function createTableFillThead(root, data, render) {
+function createTableFillThead(thead, root, data, render) {
   const TMPRoot = document.createDocumentFragment();
   const tr = create('tr', TMPRoot);
   for (let i = 0; i < data.length; i++) {
@@ -135,7 +140,7 @@ function createTableFillThead(root, data, render) {
     if (item.checkbox) {
       th.appendChild(createCheckbox({
         radius: item.radius
-      }, true, root[1]));
+      }, true, root));
     }
     for (let key in item) {
       if (item.hasOwnProperty(key)) {
@@ -147,7 +152,7 @@ function createTableFillThead(root, data, render) {
       }
     }
   }
-  root[0].appendChild(TMPRoot);
+  thead.appendChild(TMPRoot);
 }
 
 /**
@@ -157,16 +162,13 @@ function createTableFillThead(root, data, render) {
  * @param {Array} map 数据和表头的对应关系
  * @param {Number} pageStart 页面开始时数据的index
  * @param {Number} limit 每页显示的数据条数
- * @param {HTMLElement|Element} root 宿主元素
- * @param {Array} root.windowCheckTask 表格中input集合
- * @param {Object} root._opt
- * @param {HTMLInputElement} root.windowCheck 表头的input
+ * @param opt
  * @param {String} type=[none|server|client] type 分页方式
  */
-function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
+function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
   removeAllChild(tbody);
-  root.windowCheckTask.length = 0;
-  root.windowCheck.checked = false;
+  opt.checkList.length = 0;
+  opt.check.checked = false;
   const TMPRoot = document.createDocumentFragment();
   let tbodyData = data.rows;
   let end = pageStart+limit;
@@ -195,8 +197,8 @@ function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
       e = data.total;
       break;
   }
-  let stripe = root._opt.stripe;
-  let stripeClass = root._opt.stripeClass;
+  let stripe = opt.stripe;
+  let stripeClass = opt.stripeClass;
   for (let i = startCondition; i < endCondition; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
@@ -207,7 +209,7 @@ function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
       const cell = map[j];
       const td = create('td', tr);
       if (cell.checkbox && j < map.length) {
-        td.appendChild(createCheckbox({radius: cell.radius}, null, root));
+        td.appendChild(createCheckbox({radius: cell.radius}, null, opt));
         continue;
       }
       for (let key in cell) {
@@ -228,7 +230,7 @@ function createTableTbody(tbody,data,map,pageStart,limit,root,type) {
     }
   }
   tbody.appendChild(TMPRoot);
-  root.showMsg(s, e);
+  opt.showMsg(s, e);
 }
 
 

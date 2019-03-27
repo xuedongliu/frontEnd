@@ -170,11 +170,10 @@ function addIframe(link) {
     if (activeTab) {
       activeTab.classList.remove('active');
     }
-    let iframe = create('iframe',tabContentList);
+    let iframe = create('iframe.active',tabContentList);
     iframe.name = target;
     iframe.src = src;
     iframe.setAttribute('frameborder', 0);
-    iframe.classList.add('active');
     frames[target] = iframe;
   }
 }

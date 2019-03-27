@@ -13,26 +13,29 @@ function createCheckbox(value, top, root) {
   chkContainer.innerHTML = `<input type="checkbox" id="${id}" ${checked} ${disabled}>
         <label for="${id}"></label>`;
   let input = $$('input', chkContainer);
+  if (!root){
+    return TMP;
+  }
   if (top) {
-    root.windowCheck = input;
+    root.check = input;
     input.addEventListener('change', function (e) {
       if (this.checked) {
-        root.windowCheckTask.forEach(function (item) {
+        root.checkList.forEach(function (item) {
           item.checked = true;
         });
       } else {
-        root.windowCheckTask.forEach(function (item) {
+        root.checkList.forEach(function (item) {
           item.checked = false;
         });
       }
     }, false);
   } else {
-    root.windowCheckTask.push(input);
+    root.checkList.push(input);
     input.addEventListener('change', function (e) {
-      let result = root.windowCheckTask.filter(item => {
+      let result = root.checkList.filter(item => {
         return item.checked;
       });
-      root.windowCheck.checked = result.length === root.windowCheckTask.length;
+      root.check.checked = result.length === root.checkList.length;
     });
   }
   return TMP;

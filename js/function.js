@@ -16,16 +16,22 @@ function $$(e, ele) {
  */
 function create(e, ele) {
   let _e = ele;
-  let element = document.createElement(e);
+  let strArr = e.split('.');
+  let el = strArr.splice(0,1);
+  let element = document.createElement(el[0]);
+  let classList = strArr;
+  if (classList.length){
+    element.classList.add(...classList);
+  }
   if (_e) {
-    _e.appendChild(element);
+    return _e.appendChild(element);
   }
   return element;
 }
 
 /**
  * 给元素设置属性。
- * @param {Element} ele 设置属性的元素
+ * @param {Element|Object} ele 设置属性的元素
  * @param {Object} option 需要设置的属性对象
  */
 function setProperty(ele, option) {

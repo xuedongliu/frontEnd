@@ -42,7 +42,7 @@
       height: 100%;
       top: 0;
       left: 0;
-      z-index: -1;
+      z-index: 1;
       pointer-events: none;
       background-position: 50%;
       transform: scale(0,0);
@@ -55,6 +55,15 @@
       font-family: iconfont !important;
       color: @checkedColor;
       font-size: @checkedFontSize;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
     }
 
   }
