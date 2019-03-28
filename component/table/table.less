@@ -2,33 +2,54 @@
 @import "../pagination/pagination";
 @checkedMargin: 0;
 @checkedBackgroundColor:#fae;
+@callBorder:1px solid #dee2e6;
+@callPadding: 0.75rem;
+@tableFooterHeight: 50px;
+@theadBorderColor:#454d55;
+@theadColor:#fff;
+@theadBgColor: #343a40;
+@tbodyStripeBgColor: #cecece38;
+@tbodyHoverColor: rgba(0,0,0,0.075);
 table{
   border-collapse: collapse;
   width: 100%;
   table-layout: fixed;
   th,td{
     box-sizing: border-box;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem;
+    border: @callBorder;
+    padding:@callPadding;
+  }
+}
+.tabContainer{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  .tableContainer{
+    flex: 1;
+    overflow: auto;
+  }
+  .table-footer-container{
+    flex: 0 @tableFooterHeight;
   }
 }
 .table{
   th{
-    color: #fff;
-    background-color: #343a40;
-    border-color: #454d55;
+    color: @theadColor;
+    background-color: @theadBgColor;
+    border-color: @theadBorderColor;
   }
   tbody{
     tr{
       &:hover{
-        background-color: rgba(0,0,0,0.075) !important;
+        background-color: @tbodyHoverColor !important;
       }
     }
   }
   &.stripe{
     tbody{
       tr:nth-of-type(2n){
-        background-color: #cecece38;
+        background-color: @tbodyStripeBgColor;
       }
     }
   }

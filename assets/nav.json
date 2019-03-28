@@ -56,6 +56,11 @@
           "code": "D002_9",
           "name": "nav",
           "link": "component/nav/nav.html"
+        },
+        {
+          "code": "D002_10",
+          "name": "loading",
+          "link": "component/loading/loading.html"
         }
       ]
     }

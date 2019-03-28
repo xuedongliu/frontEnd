@@ -2,6 +2,7 @@ import {$$, create, removeAllChild} from './../../js/function.js';
 import {paginationServer} from '../pagination/pagination.server.js';
 import {paginationClient} from '../pagination/pagination.client.js';
 import {createCheckbox} from './../../js/generate.js';
+import {loading} from '../loading/loading.js';
 let tableData = {
   'total': 101,
   'rows': []
@@ -24,6 +25,7 @@ let test = createTable({
   pageList: [10, 25, 50, 100, 'All'],
   stripe: true,
   stripeClass: 'TTT',
+  loading:'loader',
   columns: [
     {
       checkbox: true,
@@ -50,7 +52,8 @@ function createTable(opt) {
   let option = createTableInit(opt);
 
   const root = $$(option.el);
-  const table = create('table.table');
+  const tableContainer = create('div.tableContainer');
+  const table = create('table.table',tableContainer);
   const tableTMP = document.createDocumentFragment();
   const thead = create('thead', tableTMP);
   const tbody = create('tbody', tableTMP);
@@ -61,14 +64,24 @@ function createTable(opt) {
     infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
   };
   table.appendChild(tableTMP);
-  root.appendChild(table);
+  root.style.position = 'relative';
+  root.style.height = '100%';
+  root.style.overflow = 'auto';
+  root.appendChild(tableContainer);
   root.appendChild(status);
-  const pagination = create('div.pagination.btn_group',root);
+  let ld;
+  let load;
+  if (option.loading){
+    load = create(`div.${option.loading}`,root);
+    ld = loading(load);
+  }
+  const pagination = create('div.pagination.btn_group',status);
 
   if (option.stripe){
     table.classList.add('stripe');
   }
   if (option.ajax){
+    ld.show();
     option.ajax({start:option._d.start * option.pageSize,length:option.pageSize},root);
   }else {
     if (option.pagination) {
@@ -85,17 +98,21 @@ function createTable(opt) {
       root._init = false;
       if (option.pagination){
         paginationServer(data,option.pageSize,option._d.start,pagination, root,function (start,length) {
+          ld.show();
           option.ajax({start,length},root);
         });
       }else {
         option.data = data;
+        ld.hide();
         createTableTbody(tbody,option.data,option.columns,0,option.pageSize,option._d,'none');
       }
     }else {
+      ld.hide();
       createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
     }
   };
   root.default = function (data) {
+    ld.hide();
     createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
   };
   return root;
@@ -113,6 +130,7 @@ function createTableInit(opt) {
     stripeClass: opt.stripeClass||'',
     pageNumber: opt.pageNumber||1,
     pageSize: opt.pageSize||10,
+    loading:opt.loading||'loader',
     // pageList: [10, 25, 50, 100, 'All'],
     columns: opt.columns||[],
     _d:{
