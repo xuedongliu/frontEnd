@@ -3,62 +3,18 @@ import {paginationServer} from '../pagination/pagination.server.js';
 import {paginationClient} from '../pagination/pagination.client.js';
 import {createCheckbox} from './../../js/generate.js';
 import {loading} from '../loading/loading.js';
-let tableData = {
-  'total': 101,
-  'rows': []
-};
-for (let i = 0 ;i<tableData.total;i++){
-  tableData.rows.push({
-    'test':i+1,
-    'test1':i+2
-  });
-}
-let test = createTable({
-  el: '#table',
-  pagination: true,
-  // sortable: true,
-  ajax: getNewsList,
-  data: tableData,
-  sidePagination: 'server',
-  pageNumber:2,
-  pageSize: 20, //每页数据,
-  pageList: [10, 25, 50, 100, 'All'],
-  stripe: true,
-  stripeClass: 'TTT',
-  loading:'loader',
-  columns: [
-    {
-      checkbox: true,
-      align: 'center',
-      radius: true,
-      width: 50
-    },
-    {
-      field: 'test',
-      title: '新闻标题',
-      width: 200,
-      align: 'center'
-    },
-    {
-      field: 'test1',
-      title: '分类',
-      sortable: true,
-      align: 'center'
-    }
-  ]
-});
 
 function createTable(opt) {
   let option = createTableInit(opt);
-
   const root = $$(option.el);
-  const tableContainer = create('div.tableContainer');
+  const tableContainer = create(`div.tableContainer${option.freezeThead?'.freezeThead':''}`);
   const table = create('table.table',tableContainer);
   const tableTMP = document.createDocumentFragment();
   const thead = create('thead', tableTMP);
   const tbody = create('tbody', tableTMP);
   const status = create('div.table-footer-container');
   const infoMsg = create('span.table-footer-msg',status);
+  const theadColGroup = create('colgroup');
   createTableFillThead(thead, option._d, option.columns);
   option._d.showMsg = function (index,end) {
     infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
@@ -104,16 +60,35 @@ function createTable(opt) {
       }else {
         option.data = data;
         ld.hide();
+        root.freezeThead();
         createTableTbody(tbody,option.data,option.columns,0,option.pageSize,option._d,'none');
       }
     }else {
       ld.hide();
+      root.freezeThead();
       createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
     }
   };
   root.default = function (data) {
     ld.hide();
     createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
+    root.freezeThead();
+  };
+  root.freezeThead = function () {
+    if (option.freezeThead) {
+      thead.querySelectorAll('th').forEach((item,index) => {
+        let col = theadColGroup.children[index] || create('col',theadColGroup);
+        col.width = item.clientWidth;
+      });
+      // console.log(theadColGroup);
+      table.appendChild(theadColGroup);
+      const freezeTable = create('table.freezeTable');
+      tableContainer.appendChild(freezeTable);
+      freezeTable.appendChild(thead);
+      tableContainer.style.paddingTop = thead.clientHeight + 'px';
+      freezeTable.style.width = tableContainer.clientWidth + 'px';
+      freezeTable.appendChild(theadColGroup.cloneNode(true));
+    }
   };
   return root;
 }
@@ -131,13 +106,16 @@ function createTableInit(opt) {
     pageNumber: opt.pageNumber||1,
     pageSize: opt.pageSize||10,
     loading:opt.loading||'loader',
+    showTip: opt.showTip||false,
     // pageList: [10, 25, 50, 100, 'All'],
     columns: opt.columns||[],
+    freezeThead: opt.freezeThead||false,
     _d:{
       checkList : [],
       stripe: opt.stripe||true,
       stripeClass: opt.stripeClass||'',
-      start: opt.pageNumber - 1
+      start: opt.pageNumber - 1,
+      showTip: opt.showTip||false
     }
   };
 }
@@ -220,7 +198,7 @@ function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
   for (let i = startCondition; i < endCondition; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
-    if (stripe&&i%2===1){
+    if (stripe&&stripeClass&&i%2===1){
       tr.classList.add(stripeClass);
     }
     for (let j = 0; j < map.length; j++) {
@@ -239,6 +217,11 @@ function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
             case 'class':
               td.classList.add(cell[key]);
               break;
+            case 'title':
+              if (opt.showTip) {
+                td.setAttribute(key, cell[key]);
+              }
+              break;
             default:
               td.setAttribute(key, cell[key]);
               break;
@@ -251,15 +234,4 @@ function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
   opt.showMsg(s, e);
 }
 
-
-function getNewsList({start ,length}) {
-  // console.log(start,length);
-  setTimeout(function () {
-    let tmp = {};
-    tmp.total = tableData.total;
-    tmp.start = start;
-    tmp.length = length;
-    tmp.rows = tableData.rows.slice(start,start+length);
-    test.update(tmp);
-  },1000);
-}
+export {createTable};
