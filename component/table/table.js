@@ -15,6 +15,7 @@ function createTable(opt) {
   const status = create('div.table-footer-container');
   const infoMsg = create('span.table-footer-msg',status);
   const theadColGroup = create('colgroup');
+  let theadColGroupCopy;
   createTableFillThead(thead, option._d, option.columns);
   option._d.showMsg = function (index,end) {
     infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
@@ -60,13 +61,12 @@ function createTable(opt) {
       }else {
         option.data = data;
         ld.hide();
-        root.freezeThead();
         createTableTbody(tbody,option.data,option.columns,0,option.pageSize,option._d,'none');
       }
     }else {
       ld.hide();
-      root.freezeThead();
       createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
+      root.freezeThead();
     }
   };
   root.default = function (data) {
@@ -74,6 +74,9 @@ function createTable(opt) {
     createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
     root.freezeThead();
   };
+  const freezeTable = create('table.freezeTable');
+  tableContainer.appendChild(freezeTable);
+  freezeTable.appendChild(thead);
   root.freezeThead = function () {
     if (option.freezeThead) {
       thead.querySelectorAll('th').forEach((item,index) => {
@@ -82,12 +85,16 @@ function createTable(opt) {
       });
       // console.log(theadColGroup);
       table.appendChild(theadColGroup);
-      const freezeTable = create('table.freezeTable');
-      tableContainer.appendChild(freezeTable);
-      freezeTable.appendChild(thead);
-      tableContainer.style.paddingTop = thead.clientHeight + 'px';
+      if (theadColGroupCopy){
+        theadColGroupCopy.remove();
+        theadColGroupCopy = null;
+        theadColGroupCopy = theadColGroup.cloneNode(true);
+      } else {
+        theadColGroupCopy = theadColGroup.cloneNode(true);
+      }
+      freezeTable.appendChild(theadColGroupCopy);
+      tableContainer.style.marginTop = thead.clientHeight + 'px';
       freezeTable.style.width = tableContainer.clientWidth + 'px';
-      freezeTable.appendChild(theadColGroup.cloneNode(true));
     }
   };
   return root;
@@ -153,7 +160,7 @@ function createTableFillThead(thead, root, data, render) {
 
 /**
  * 绘制表格函数
- * @param {HTMLElement} tbody tbody元素
+ * @param {HTMLElement|Element} tbody tbody元素
  * @param {Object} data 渲染数据
  * @param {Array} map 数据和表头的对应关系
  * @param {Number} pageStart 页面开始时数据的index
