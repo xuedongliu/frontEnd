@@ -43,6 +43,7 @@ function setProperty(ele, option) {
   }
 }
 
+
 function observe(data,callback) {
   if (!data || typeof data !== 'object') {
     return;

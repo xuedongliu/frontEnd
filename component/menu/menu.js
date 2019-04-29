@@ -13,6 +13,13 @@ fetch('assets/nav.json').then(res => res.json()).then(res => {
   gMenu(res.data,addIframe);
 });
 
+
+/**
+ * addTab - 添加tab标签页
+ *
+ * @param  {type} link description
+ * @return {type}      description
+ */
 function addTab(link) {
   let tabListItemActive = $$('.active', tabListItem);
   if (tabListItemActive) {

@@ -3,4 +3,93 @@
 <link rel="stylesheet" href="table.css">
 <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
 <div id="table" class="tabContainer"></div>
-<script src="table.js" type="module"></script>
+<!--<script src="table.js" type="module"></script>-->
+<button>test</button>
+<script type="module">
+  import {createTable} from './table.js';
+  let tableData = {
+    'total': 101,
+    'rows': []
+  };
+  for (let i = 0 ;i<tableData.total;i++){
+    tableData.rows.push({
+      'num':i+1,
+      'name':'用户'+(i+1),
+      'sex':i%3==0?'男':'女',
+      'email':'user'+(i+1)+'@css.com.cn',
+      'organ':'机构'+(i+1),
+      'status':i%5==0?'不可用':'可用'
+    });
+  }
+  let test = createTable({
+    el: '#table',
+    pagination: true,
+    // sortable: true,
+    ajax: getNewsList,
+    // data: tableData,
+    sidePagination: 'client',
+    pageNumber:1,
+    pageSize: 20, //每页数据,
+    // pageList: [10, 25, 50, 100, 'All'],
+    stripe: true,
+    // stripeClass: 'TTT',
+    // showTip:true,
+    freezeThead: true,
+    loading:'loader',
+    columns: [
+      {
+        checkbox: true,
+        align: 'center',
+        radius: false,
+        width: 40
+      },
+      {
+        field: 'num',
+        title: '工号',
+        align: 'center'
+      },
+      {
+        field: 'name',
+        title: '姓名',
+        align: 'center'
+      },
+      {
+        field: 'sex',
+        title: '性别',
+        align: 'center'
+      },
+      {
+        field: 'email',
+        title: '邮箱',
+        width: 200,
+        align: 'center'
+      },
+      {
+        field: 'organ',
+        title: '所在机构',
+        align: 'center'
+      },
+      {
+        field: 'status',
+        title: '状态',
+        sortable: true,
+        align: 'center'
+      }
+    ]
+  });
+  console.log(test);
+  document.querySelector('button').addEventListener('click',function () {
+    test.returnCheckList();
+  });
+  function getNewsList({start ,length}) {
+    // console.log(start,length);
+    setTimeout(function () {
+      let tmp = {};
+      tmp.total = tableData.total;
+      tmp.start = start;
+      tmp.length = length;
+      tmp.rows = tableData.rows.slice(start,start+length);
+      test.update(tmp);
+    },400);
+  }
+</script>

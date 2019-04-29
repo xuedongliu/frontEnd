@@ -12,7 +12,7 @@ const SHOWNUMBER = 5;
  * @param size 每页显示数据
  * @param now 默认显示第几页
  * @param {Element|null} paginationListContainer 分页插件的填充位置
- * @param {Element} root 宿主元素
+ * @param {createTableInit} root
  * @param callback 点击页码的回调函数
  */
 function pagination(data, size, now, paginationListContainer, root, callback) {
@@ -58,9 +58,6 @@ function pagination(data, size, now, paginationListContainer, root, callback) {
       paginationListTask.push(paginationItemChild);
     }
   } else {
-
-
-
     for (let i = 0; i < SHOWNUMBER; i++) {
       let paginationItemChild = create('button', paginationListTMP);
       paginationItemChild.classList.add('btn', 'btn_mini', 'btn_default', 'ripple', 'paginationItem', 'paginationItemChild');

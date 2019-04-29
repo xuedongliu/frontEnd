@@ -1,130 +1,85 @@
-import {$$, create, removeAllChild} from './../../js/function.js';
+import {create, removeAllChild} from './../../js/function.js';
 import {paginationServer} from '../pagination/pagination.server.js';
 import {paginationClient} from '../pagination/pagination.client.js';
 import {createCheckbox} from './../../js/generate.js';
 import {loading} from '../loading/loading.js';
+import {createTableInit} from './createTableInit.js';
+
 
 function createTable(opt) {
-  let option = createTableInit(opt);
-  const root = $$(option.el);
-  const tableContainer = create(`div.tableContainer${option.freezeThead?'.freezeThead':''}`);
-  const table = create('table.table',tableContainer);
-  const tableTMP = document.createDocumentFragment();
-  const thead = create('thead', tableTMP);
-  const tbody = create('tbody', tableTMP);
-  const status = create('div.table-footer-container');
-  const infoMsg = create('span.table-footer-msg',status);
-  const theadColGroup = create('colgroup');
-  let theadColGroupCopy;
+  let option = new createTableInit(opt);
+  const root = option.dom.root;
+  const table = option.dom.table;
+  const tableTMP = option.dom.documentFragment;
+  const thead = option.dom.thead;
+  const tbody = option.dom.tbody;
+  const status = option.dom.status;
   createTableFillThead(thead, option._d, option.columns);
-  option._d.showMsg = function (index,end) {
-    infoMsg.innerHTML = `显示第${index+1}-${end}条信息,共${option.data.total}条信息`;
-  };
   table.appendChild(tableTMP);
   root.style.position = 'relative';
   root.style.height = '100%';
   root.style.overflow = 'auto';
-  root.appendChild(tableContainer);
-  root.appendChild(status);
   let ld;
   let load;
-  if (option.loading){
-    load = create(`div.${option.loading}`,root);
+  let pagination;
+  if (option.loading) {
+    load = create(`div.${option.loading}`, root);
     ld = loading(load);
   }
-  const pagination = create('div.pagination.btn_group',status);
-
-  if (option.stripe){
+  if (option.pagination) {
+    pagination = create('div.pagination.btn_group', status);
+  }
+  if (option.stripe) {
     table.classList.add('stripe');
   }
-  if (option.ajax){
-    ld.show();
-    option.ajax({start:option._d.start * option.pageSize,length:option.pageSize},root);
-  }else {
+  if (option.ajax) {
+    if (option.pagination) ld.show();
+    option.ajax({start: option._d.start * option.pageSize, length: option.pageSize});
+  } else {
     if (option.pagination) {
-      paginationClient(option.data.total,option.pageSize,option._d.start,pagination,function (start, length) {
-        createTableTbody(tbody,option.data,option.columns,start,length,option._d,'client');
+      paginationClient(option.data.total, option.pageSize, option._d.start, pagination, function (start, length) {
+        createTableTbody(tbody, option.data, option.columns, start, length, option._d, 'client', option);
+        option.freezeThead();
       });
     } else {
-      createTableTbody(tbody, option.data, option.columns,0,option.pageSize,option._d, 'noe');
+      createTableTbody(tbody, option.data, option.columns, 0, option.pageSize, option._d, 'noe', option);
+      option.freezeThead();
     }
   }
-  root._init = true;
-  root.update = function (data) {
-    if (root._init){
-      root._init = false;
-      if (option.pagination){
-        paginationServer(data,option.pageSize,option._d.start,pagination, root,function (start,length) {
-          ld.show();
-          option.ajax({start,length},root);
-        });
-      }else {
-        option.data = data;
-        ld.hide();
-        createTableTbody(tbody,option.data,option.columns,0,option.pageSize,option._d,'none');
-      }
-    }else {
-      ld.hide();
-      createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
-      root.freezeThead();
-    }
-  };
-  root.default = function (data) {
-    ld.hide();
-    createTableTbody(tbody,data,option.columns,data.start,data.length,option._d,'server');
-    root.freezeThead();
-  };
-  const freezeTable = create('table.freezeTable');
-  tableContainer.appendChild(freezeTable);
-  freezeTable.appendChild(thead);
-  root.freezeThead = function () {
-    if (option.freezeThead) {
-      thead.querySelectorAll('th').forEach((item,index) => {
-        let col = theadColGroup.children[index] || create('col',theadColGroup);
-        col.width = item.clientWidth;
-      });
-      // console.log(theadColGroup);
-      table.appendChild(theadColGroup);
-      if (theadColGroupCopy){
-        theadColGroupCopy.remove();
-        theadColGroupCopy = null;
-        theadColGroupCopy = theadColGroup.cloneNode(true);
-      } else {
-        theadColGroupCopy = theadColGroup.cloneNode(true);
-      }
-      freezeTable.appendChild(theadColGroupCopy);
-      tableContainer.style.marginTop = thead.clientHeight + 'px';
-      freezeTable.style.width = tableContainer.clientWidth + 'px';
-    }
-  };
-  return root;
-}
 
-function createTableInit(opt) {
-  return {
-    el: opt.el,
-    pagination: opt.pagination||false,
-    sortable: opt.sortable||false,
-    ajax: opt.ajax||null,
-    data: opt.data||{},
-    sidePagination:opt.sidePagination|| 'server',
-    stripe: opt.stripe||true,
-    stripeClass: opt.stripeClass||'',
-    pageNumber: opt.pageNumber||1,
-    pageSize: opt.pageSize||10,
-    loading:opt.loading||'loader',
-    showTip: opt.showTip||false,
-    // pageList: [10, 25, 50, 100, 'All'],
-    columns: opt.columns||[],
-    freezeThead: opt.freezeThead||false,
-    _d:{
-      checkList : [],
-      stripe: opt.stripe||true,
-      stripeClass: opt.stripeClass||'',
-      start: opt.pageNumber - 1,
-      showTip: opt.showTip||false
+  option.update = function (data) {
+    if (option._d.init) {
+      option._d.init = false;
+      if (option.pagination) {
+        option.data.total = data.total;
+        paginationServer(data, option.pageSize, option._d.start, pagination, option, function (start, length) {
+          if (option.pagination) ld.show();
+          option.ajax({start, length});
+        });
+      } else {
+        option.data = data;
+        if (option.pagination) ld.hide();
+        createTableTbody(tbody, option.data, option.columns, 0, option.pageSize, option._d, 'none', option);
+      }
+    } else {
+      if (option.pagination) ld.hide();
+      createTableTbody(tbody, data, option.columns, data.start, data.length, option._d, 'server', option);
+      option.freezeThead();
     }
   };
+  option.default = function (data) {
+    if (option.pagination) ld.hide();
+    createTableTbody(tbody, data, option.columns, data.start, data.length, option._d, 'server', option);
+    option.freezeThead();
+  };
+  option.returnCheckList=function () {
+    let arr = [];
+    option._d.checkList.filter((item) => {return item.checked;}).forEach((item) => {
+      arr.push(item.parentElement.parentElement.parentElement._d);
+    });
+    console.log(arr);
+  };
+  return option;
 }
 
 /**
@@ -167,14 +122,15 @@ function createTableFillThead(thead, root, data, render) {
  * @param {Number} limit 每页显示的数据条数
  * @param opt
  * @param {String} type=[none|server|client] type 分页方式
+ * @param {createTableInit} option
  */
-function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
+function createTableTbody(tbody, data, map, pageStart, limit, opt, type, option) {
   removeAllChild(tbody);
   opt.checkList.length = 0;
   opt.check.checked = false;
   const TMPRoot = document.createDocumentFragment();
   let tbodyData = data.rows;
-  let end = pageStart+limit;
+  let end = pageStart + limit;
   let length = end > data.total ? data.total : end;
   let startCondition;
   let endCondition;
@@ -205,7 +161,8 @@ function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
   for (let i = startCondition; i < endCondition; i++) {
     const row = tbodyData[i];
     const tr = create('tr', TMPRoot);
-    if (stripe&&stripeClass&&i%2===1){
+    tr._d = row;
+    if (stripe && stripeClass && i % 2 === 1) {
       tr.classList.add(stripeClass);
     }
     for (let j = 0; j < map.length; j++) {
@@ -238,7 +195,7 @@ function createTableTbody(tbody,data,map,pageStart,limit,opt,type) {
     }
   }
   tbody.appendChild(TMPRoot);
-  opt.showMsg(s, e);
+  option.showMsg(s, e);
 }
 
 export {createTable};
