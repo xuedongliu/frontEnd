@@ -13,7 +13,7 @@ const SHOWNUMBER = 5;
  * @param now 默认显示第几页
  * @param {Element|null} paginationListContainer 分页插件的填充位置
  * @param {createTableInit} root
- * @param callback 点击页码的回调函数
+ * @param {Function} callback  点击页码的回调函数
  */
 function pagination(data, size, now, paginationListContainer, root, callback) {
 
